@@ -2,7 +2,7 @@
 # Enable here-documents:
 # https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/syntax.md#here-documents
 
-FROM debian:bullseye-20220328-slim AS build
+FROM debian:bookworm-20250630-slim AS build
 
 RUN set -exu && \
     apt-get update && \
@@ -72,7 +72,7 @@ RUN set -exu && \
 Source: ${PKG_NAME}
 Section: net
 Priority: optional
-Maintainer: TinyPilot Support <support@tinypilotkvm.com>
+Maintainer: RJ Bergeron <rj@produxi.net>
 Build-Depends: debhelper (>= 11)
 
 Package: ${PKG_NAME}
