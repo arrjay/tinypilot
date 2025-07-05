@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -ex
+
+mkdir ./output
+mv debian-pkg/releases/*/*.deb ./output
+cd ./output && zip packages.zip *.deb
