@@ -26,19 +26,6 @@ adduser \
   --home "${TINYPILOT_HOME_DIR}" \
   "${TINYPILOT_USER}"
 
-chown -R "${TINYPILOT_USER}:${TINYPILOT_GROUP}" /opt/tinypilot
-
-# Enable the dwc2 kernel driver, which we need to emulate USB devices with USB
-# OTG.
-readonly MODULES_PATH='/etc/modules'
-if ! grep --quiet '^dwc2$' "${MODULES_PATH}" ; then
-  echo 'dwc2' | tee --append "${MODULES_PATH}"
-fi
-readonly BOOT_CONFIG_PATH='/boot/config.txt'
-if ! grep --quiet '^dtoverlay=dwc2$' "${BOOT_CONFIG_PATH}" ; then
-  echo 'dtoverlay=dwc2' | tee --append "${BOOT_CONFIG_PATH}"
-fi
-
 # Create TinyPilot settings file if it doesn't already exist.
 readonly TINYPILOT_SETTINGS_FILE="${TINYPILOT_HOME_DIR}/settings.yml"
 if [[ ! -f "${TINYPILOT_SETTINGS_FILE}" ]]; then
@@ -51,43 +38,10 @@ if [[ ! -f "${TINYPILOT_SETTINGS_FILE}" ]]; then
 fi
 
 # Populate TinyPilot's NGINX config file.
-pushd /opt/tinypilot
-. venv/bin/activate
 runuser tinypilot \
-  --command 'PYTHONPATH=/opt/tinypilot/app ./scripts/render-template' \
+  --command 'PYTHONPATH=/usr/lib/tinypilot/app /usr/lib/tinypilot/venv/bin/python /usr/lib/tinypilot/scripts/render-template' \
   < /usr/share/tinypilot/templates/tinypilot.conf.j2 \
   > /etc/nginx/conf.d/tinypilot.conf
-deactivate
-popd
-
-tc358743_overlay_enabled='false'
-if grep --silent '^dtoverlay=tc358743$' "${BOOT_CONFIG_PATH}" ; then
-  tc358743_overlay_enabled='true'
-
-  # Enable TC358743-audio overlay in /boot/config.txt.
-  # Note that the tc358743-audio overlay depends on the tc358743 overlay.
-  sed --in-place --expression '/dtoverlay=tc358743-audio/d' "${BOOT_CONFIG_PATH}"
-  sed --in-place '/dtoverlay=tc358743/ a dtoverlay=tc358743-audio' "${BOOT_CONFIG_PATH}"
-
-  # Set GPU memory to 256MB in /boot/config.txt
-  if grep --silent '^gpu_mem=' "${BOOT_CONFIG_PATH}" ; then
-    sed --in-place '/^gpu_mem=/ c\gpu_mem=256' "${BOOT_CONFIG_PATH}"
-  else
-    echo 'gpu_mem=256' | tee --append "${BOOT_CONFIG_PATH}"
-  fi
-
-  # Populate TinyPilot's EDID.
-  mkdir -p /home/ustreamer/edids
-  pushd /opt/tinypilot
-  . venv/bin/activate
-  runuser tinypilot \
-    --command 'PYTHONPATH=/opt/tinypilot/app ./scripts/render-template' \
-    <<< '{{ ustreamer_edid }}' \
-    > /home/ustreamer/edids/tc358743-edid.hex
-  deactivate
-  chmod 0644 /home/ustreamer/edids/tc358743-edid.hex
-  popd
-fi
 
 # Populate TinyPilot's Janus settings file.
 readonly JANUS_PLUGIN_USTREAMER_CONFIG='/etc/janus/janus.plugin.ustreamer.jcfg'
@@ -97,17 +51,6 @@ video: {
 }
 EOF
 
-# Append audio settings if TC358743 support is enabled.
-# (acap = “audio capture”)
-if "${tc358743_overlay_enabled}" ; then
-  cat <<EOF >> "${JANUS_PLUGIN_USTREAMER_CONFIG}"
-acap: {
-    device = "hw:1"
-    tc358743 = "/dev/video0"
-}
-EOF
-fi
-
 # Create a directory for uStreamer launcher configs.
 readonly USTREAMER_LAUNCHER_BASE_DIR='/opt/ustreamer-launcher'
 readonly USTREAMER_LAUNCHER_CONFIG_DIR="${USTREAMER_LAUNCHER_BASE_DIR}/configs.d"
@@ -115,9 +58,6 @@ mkdir -p "${USTREAMER_LAUNCHER_CONFIG_DIR}"
 
 # Figure out which uStreamer settings file to use.
 USTREAMER_CONFIG_TARGET="${USTREAMER_LAUNCHER_BASE_DIR}/config-library/hdmi-to-usb.yml"
-if "${tc358743_overlay_enabled}" ; then
-  USTREAMER_CONFIG_TARGET="${USTREAMER_LAUNCHER_BASE_DIR}/config-library/tc358743.yml"
-fi
 readonly USTREAMER_CONFIG_TARGET
 
 readonly USTREAMER_BASE_CONFIG_FILE="${USTREAMER_LAUNCHER_CONFIG_DIR}/000-defaults.yml"
@@ -162,7 +102,7 @@ else
 fi
 
 # Restore the Janus config files.
-/opt/tinypilot-privileged/scripts/configure-janus
+/usr/libexec/tinypilot-privileged/scripts/configure-janus
 cp \
   /usr/share/tinypilot/janus.transport.websockets.jcfg \
   /etc/janus/janus.transport.websockets.jcfg

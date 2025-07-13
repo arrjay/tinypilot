@@ -33,11 +33,7 @@ while (( "$#" > 0 )); do
 done
 
 # Generate and write config file from template.
-pushd /opt/tinypilot
-. venv/bin/activate
 runuser tinypilot \
-  --command 'PYTHONPATH=/opt/tinypilot/app ./scripts/render-template' \
+  --command 'PYTHONPATH=/usr/lib/tinypilot/app /usr/lib/tinypilot/venv/bin/python /usr/lib/tinypilot/scripts/render-template' \
   < /usr/share/tinypilot/templates/janus.jcfg.j2 \
   > /etc/janus/janus.jcfg
-deactivate
-popd
