@@ -8,8 +8,8 @@ StartLimitBurst=20
 [Service]
 Type=simple
 User=ustreamer
-WorkingDirectory=/opt/ustreamer-launcher
-ExecStart=/opt/ustreamer-launcher/launch
+WorkingDirectory=/usr/libexec/ustreamer-launcher
+ExecStart=/usr/libexec/ustreamer-launcher/launch
 Restart=always
 # ustreamer sometimes fails to start. Introducing extra restart time and
 # start limits works around this problem. More details and investigation in this

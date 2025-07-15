@@ -1,3 +1,4 @@
+{% set tinypilot_path = '/usr/lib/tinypilot' %}
 upstream tinypilot {
     server 127.0.0.1:48000 fail_timeout=1s max_fails=600;
 }
@@ -16,7 +17,7 @@ server {
 
     server_name tinypilot;
 
-    root /opt/tinypilot;
+    root {{ tinypilot_path }};
 
     index index.html;
 
@@ -67,7 +68,7 @@ server {
         proxy_pass http://tinypilot;
     }
     location ~* ^/.+\.(html|js|js.map|css|woff|woff2)$ {
-        root "/opt/tinypilot/app/static";
+        root "{{ tinypilot_path }}/app/static";
 
         # We cache assets to prevent the browser from making redundant
         # requests to the same files while loading the page. (Observed on
@@ -79,6 +80,6 @@ server {
         add_header Cache-Control 'public, max-age=10s';
     }
     location ~* ^/.+\.(jpg|jpeg|png|ico)$ {
-        root "/opt/tinypilot/app/static";
+        root "{{ tinypilot_path }}/app/static";
     }
 }

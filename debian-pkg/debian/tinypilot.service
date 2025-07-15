@@ -7,8 +7,8 @@ StartLimitIntervalSec=0
 [Service]
 Type=simple
 User=tinypilot
-WorkingDirectory=/opt/tinypilot
-ExecStart=/opt/tinypilot/venv/bin/python app/main.py
+WorkingDirectory=/usr/lib/tinypilot
+ExecStart=/usr/lib/tinypilot/venv/bin/python app/main.py
 Restart=always
 
 [Install]
