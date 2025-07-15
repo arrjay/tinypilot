@@ -42,8 +42,8 @@ USTREAMER_ARGS=()
 # earlier ones.
 # Prevent shellcheck from thinking that $item is a bash variable.
 # shellcheck disable=SC2016
-MERGED_YAML="$(yq eval-all '. as $item ireduce ({}; . * $item )' \
-                /opt/ustreamer-launcher/configs.d/*)"
+MERGED_YAML="$(yq -s add\
+                /usr/libexec/ustreamer-launcher/configs.d/*)"
 readonly MERGED_YAML
 
 # If the given YAML path is defined in the launcher configs, append the
