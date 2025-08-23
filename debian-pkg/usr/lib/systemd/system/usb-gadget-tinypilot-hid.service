@@ -1,0 +1,15 @@
+[Unit]
+Description=configure usb HID gadget for tinypilot
+After=usb-gadget-base.service
+Wants=usb-gadget-base.service
+Requires=usb-gadget-base.service
+ConditionPathIsDirectory=/sys/kernel/config/usb_gadget/g/configs/c.1
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/usr/libexec/tinypilot-privileged/function-hid start
+ExecStop=/usr/libexec/tinypilot-privileged/function-hid stop
+
+[Install]
+WantedBy=usb-gadget.target

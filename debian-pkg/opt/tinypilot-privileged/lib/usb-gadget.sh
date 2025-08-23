@@ -3,7 +3,7 @@
 # Shared parameters and functionality for the usb gadget.
 # See: docs/usb-gadget-driver.md
 
-export USB_DEVICE_DIR="g1"
+export USB_DEVICE_DIR="g"
 readonly USB_DEVICE_DIR
 export USB_GADGET_PATH="/sys/kernel/config/usb_gadget"
 readonly USB_GADGET_PATH

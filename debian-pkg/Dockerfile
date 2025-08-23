@@ -77,7 +77,7 @@ Build-Depends: debhelper (>= 11)
 
 Package: ${PKG_NAME}
 Architecture: ${PKG_ARCH}
-Depends: \${shlibs:Depends}, adduser, janus, nginx, python3, python3-pip, python3-venv, sudo, ustreamer
+Depends: \${shlibs:Depends}, adduser, janus, nginx, python3, python3-pip, python3-venv, sudo, ustreamer, yq, usb-gadget-scripts
 Homepage: https://tinypilotkvm.com
 Description: Simple, easy-to-use KVM over IP
 XBS-Tinypilot-Version: ${TINYPILOT_VERSION}
@@ -89,7 +89,7 @@ tinypilot (${PKG_VERSION}) bullseye; urgency=medium
 
   * Latest TinyPilot release.
 
- -- TinyPilot Support <support@tinypilotkvm.com>  $(date '+%a, %d %b %Y %H:%M:%S %z')
+ -- RJ Bergeron <code@xylate.net>  $(date '+%a, %d %b %Y %H:%M:%S %z')
 EOF
 
 # Rename the placeholder release directory to the final package ID.

@@ -1,14 +1,14 @@
 [Unit]
 Description=TinyPilot - RPi-based virtual KVM
 BindsTo=nginx.service
-After=syslog.target network.target nginx.service
+After=syslog.target network.target nginx.service usb-gadget-finalize.service
 StartLimitIntervalSec=0
 
 [Service]
 Type=simple
 User=tinypilot
-WorkingDirectory=/opt/tinypilot
-ExecStart=/opt/tinypilot/venv/bin/python app/main.py
+WorkingDirectory=/usr/lib/tinypilot
+ExecStart=/usr/lib/tinypilot/venv/bin/python app/main.py
 Restart=always
 
 [Install]
