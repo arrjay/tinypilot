@@ -2,14 +2,8 @@
 
 # Configures USB gadgets, see: docs/usb-gadget-driver.md
 
-# Exit on first error.
-set -e
-
-# Echo commands before executing them, by default to stderr.
-set -x
-
-# Treat undefined environment variables as errors.
-set -u
+# Exit on first error, Echo commands before executing them, by default to stderr, Treat undefined environment variables as errors.
+set -exu
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 readonly SCRIPT_DIR
@@ -24,39 +18,12 @@ Init USB gadget.
 EOF
 }
 
-# Parse command-line arguments.
-while getopts "h" opt; do
-  case "${opt}" in
-    h)
-      print_help
-      exit
-      ;;
-    *)
-      print_help >&2
-      exit 1
-  esac
-done
-
-modprobe libcomposite
-
 # Adapted from https://github.com/girst/hardpass-sendHID/blob/master/README.md
 
-cd "${USB_GADGET_PATH}"
-mkdir -p "${USB_DEVICE_DIR}"
-cd "${USB_DEVICE_DIR}"
-
-echo 0x1d6b > idVendor  # Linux Foundation
-echo 0x0104 > idProduct # Multifunction Composite Gadget
-echo 0x0100 > bcdDevice # v1.0.0
-echo 0x0200 > bcdUSB    # USB2
-
-mkdir -p "$USB_STRINGS_DIR"
-echo "6b65796d696d6570690" > "${USB_STRINGS_DIR}/serialnumber"
-echo "tinypilot" > "${USB_STRINGS_DIR}/manufacturer"
-echo "Multifunction USB Device" > "${USB_STRINGS_DIR}/product"
-
+start_gadget() {
+cd "${USB_DEVICE_PATH}"
 # Keyboard
-mkdir -p "$USB_KEYBOARD_FUNCTIONS_DIR"
+mkdir -p "${USB_KEYBOARD_FUNCTIONS_DIR}"
 echo 1 > "${USB_KEYBOARD_FUNCTIONS_DIR}/protocol" # Keyboard
 echo 1 > "${USB_KEYBOARD_FUNCTIONS_DIR}/subclass" # Boot interface subclass
 echo 8 > "${USB_KEYBOARD_FUNCTIONS_DIR}/report_length"
@@ -94,8 +61,9 @@ D=$(mktemp)
   echo -ne \\x95\\x06       #   Report Count (6)
   echo -ne \\x81\\x00       #   Input (Data,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
   echo -ne \\xC0            # End Collection
-} >> "$D"
+} > "$D"
 cp "$D" "${USB_KEYBOARD_FUNCTIONS_DIR}/report_desc"
+rm "$D"
 # Enable pre-boot events (if the gadget driver supports it).
 if [[ -f "${USB_KEYBOARD_FUNCTIONS_DIR}/no_out_endpoint" ]]; then
   echo 1 > "${USB_KEYBOARD_FUNCTIONS_DIR}/no_out_endpoint"
@@ -146,17 +114,31 @@ echo -ne \\x75\\x08      #   REPORT_SIZE (8)
 echo -ne \\x95\\x01      #   REPORT_COUNT (1)
 echo -ne \\x81\\x06      #   INPUT (Data,Var,Rel)
 echo -ne \\xC0           # END_COLLECTION
-} >> "$D"
+} > "$D"
 cp "$D" "${USB_MOUSE_FUNCTIONS_DIR}/report_desc"
-
-mkdir -p "${USB_CONFIG_DIR}"
-echo 250 > "${USB_CONFIG_DIR}/MaxPower"
-
-CONFIGS_STRINGS_DIR="${USB_CONFIG_DIR}/${USB_STRINGS_DIR}"
-mkdir -p "${CONFIGS_STRINGS_DIR}"
-echo "Config ${USB_CONFIG_INDEX}: ECM network" > "${CONFIGS_STRINGS_DIR}/configuration"
+rm "$D"
 
 ln -s "${USB_KEYBOARD_FUNCTIONS_DIR}" "${USB_CONFIG_DIR}/"
 ln -s "${USB_MOUSE_FUNCTIONS_DIR}" "${USB_CONFIG_DIR}/"
+}
 
-usb_gadget_activate
+stop_gadget() {
+  rm "${USB_DEVICE_PATH}/${USB_CONFIG_DIR}/${USB_MOUSE_FUNCTIONS_DIR##*/}"
+  rm "${USB_DEVICE_PATH}/${USB_CONFIG_DIR}/${USB_KEYBOARD_FUNCTIONS_DIR##*/}"
+  rm "${USB_DEVICE_PATH}/${USB_MOUSE_FUNCTIONS_DIR}"
+  rm "${USB_DEVICE_PATH}/${USB_KEYBOARD_FUNCTIONS_DIR}"
+}
+
+# Parse command-line argument.
+case "${1}" in
+    start)
+      start_gadget
+    ;;
+    stop)
+      stop_gadget
+    ;;
+    *)
+      print_help >&2
+      exit 1
+    ;;
+esac
