@@ -121,6 +121,7 @@
   } from "{{ url_for('static', filename='js/events.js') }}";
   import { UpdateLogsStreamer } from "{{ url_for('static', filename='js/updatelogs.js') }}";
   import {
+    checkOfficial,
     checkStatus,
     getLatestRelease,
     getUpdateStatus,
@@ -209,6 +210,22 @@
 
         checkVersion() {
           this._state = this._states.CHECKING;
+
+          Promise.all([checkOfficial()])
+            .then(([localOfficial]) => {
+              if(localOfficial.isOfficial === false) {
+                this.dispatchEvent(
+                  new DialogFailedEvent({
+                    title: "Unofficial TinyPilot build in use",
+                    message:
+                      "Your TinyPilot device is not running an official " +
+                      "build, so it is not safe to update using TinyPilot " +
+                      "provided methods.",
+                  })
+                );
+                return;
+              }
+            })
 
           Promise.all([getVersion(), getLatestRelease()])
             .then(([localVersion, latestRelease]) => {
