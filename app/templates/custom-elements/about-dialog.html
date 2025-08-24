@@ -34,11 +34,18 @@
       margin-top: 0;
       columns: 3;
     }
+
+    #unofficial-error {
+      margin-top: 1rem;
+    }
   </style>
 
   <div class="content">
     <h3>About TinyPilot</h3>
     <p>
+      <inline-message variant="error" id="unofficial-error">
+        <strong>This is not an official TinyPilot Release.</strong>
+      </inline-message><br />
       <strong>Version:</strong>
       <span id="version-number" class="monospace"></span><br />
       <strong>Source:</strong>
@@ -70,7 +77,7 @@
 
 <script type="module">
   import { DialogClosedEvent, DialogFailedEvent } from "{{ url_for('static', filename='js/events.js') }}";
-  import { getLicensingMetadata, getVersion } from "{{ url_for('static', filename='js/controllers.js') }}";
+  import { getLicensingMetadata, getVersion, checkOfficial } from "{{ url_for('static', filename='js/controllers.js') }}";
 
   (function () {
     const template = document.querySelector("#about-dialog-template");
@@ -92,9 +99,26 @@
 
         _initialize() {
           this._checkVersion();
+          this._checkOfficial();
           this._populateCredits();
         }
 
+        _checkOfficial() {
+          checkOfficial()
+            .then(({ isOfficial }) => {
+              if (isOfficial === false) {
+                this.shadowRoot.getElementById("unofficial-error").show();
+              }
+            })
+            .catch((error) => {
+              this.dispatchEvent(
+                new DialogFailedEvent({
+                  title: "Failed to Retrieve Release Chain Information",
+                  details: error,
+                })
+              );
+            });
+        }
         _checkVersion() {
           getVersion()
             .then(({ version }) => {

@@ -127,6 +127,27 @@ def version_get():
         return json_response.error(e), 500
 
 
+@api_blueprint.route('/checkOfficial', methods=['GET'])
+def version_official():
+    """Retrieves if the TinyPilot installation is an official build.
+
+    Returns:
+        On success, a JSON data structure with the following properties:
+        isOfficial: boolean.
+
+        Example:
+        {
+            "isOfficial": false,
+        }
+
+        Returns error object on failure.
+    """
+    try:
+        return json_response.success({'isOfficial': version.official_version()})
+    except version.Error as e:
+        return json_response.error(e), 500
+
+
 @api_blueprint.route('/latestRelease', methods=['GET'])
 def latest_release_get():
     """Retrieves the latest version of TinyPilot.

@@ -72,6 +72,22 @@ def local_version():
     return version
 
 
+def official_version():
+    """Returns if this package is an official TinyPilot build/updatable.
+
+    Returns:
+        A boolean.
+
+    Raises:
+        OfficialCheckError: If an error occured while accessing the release
+            property.
+    """
+    if _is_debug():
+        return False
+    # TODO if upstream would *ever* implement such a check.
+    return False
+
+
 def latest_version():
     """Requests the latest release info from the TinyPilot Gatekeeper REST API.
 

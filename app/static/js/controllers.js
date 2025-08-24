@@ -95,6 +95,24 @@ export async function getVersion() {
     });
 }
 
+
+export async function checkOfficial() {
+  return fetch(baseAppPath + "api/checkOfficial", {
+    method: "GET",
+    mode: "same-origin",
+    cache: "no-cache",
+    redirect: "error",
+  })
+    .then(processJsonResponse)
+    .then((officialResponse) => {
+      // eslint-disable-next-line no-prototype-builtins
+      if (!officialResponse.hasOwnProperty("isOfficial")) {
+        throw new ControllerError("Missing expected isOfficial field");
+      }
+      return officialResponse;
+    });
+}
+
 export async function shutdown(restart) {
   let route = baseAppPath + "api/shutdown";
   if (restart) {
