@@ -37,11 +37,15 @@ if [[ ! -f "${TINYPILOT_SETTINGS_FILE}" ]]; then
   chmod 0644 "${TINYPILOT_SETTINGS_FILE}"
 fi
 
-# Populate TinyPilot's NGINX config file.
+# Populate TinyPilot's NGINX config files.
 runuser tinypilot \
   --command 'PYTHONPATH=/usr/lib/tinypilot/app /usr/lib/tinypilot/venv/bin/python /usr/lib/tinypilot/scripts/render-template' \
-  < /usr/share/tinypilot/templates/tinypilot.conf.j2 \
-  > /etc/nginx/conf.d/tinypilot.conf
+  < /usr/share/tinypilot/templates/tinypilot-upstreams.conf.j2 \
+  > /etc/nginx/conf.d/tinypilot-upstreams.conf
+runuser tinypilot \
+  --command 'PYTHONPATH=/usr/lib/tinypilot/app /usr/lib/tinypilot/venv/bin/python /usr/lib/tinypilot/scripts/render-template' \
+  < /usr/share/tinypilot/templates/tinypilot-location.conf.j2 \
+  > /etc/nginx/conf.d/tinypilot-location.conf.sample
 
 # Populate TinyPilot's Janus settings file.
 readonly JANUS_PLUGIN_USTREAMER_CONFIG='/etc/janus/janus.plugin.ustreamer.jcfg'

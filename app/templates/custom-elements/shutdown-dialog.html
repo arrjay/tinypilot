@@ -1,6 +1,6 @@
 <template id="shutdown-dialog-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     #prompt,
     #restarting,
@@ -62,8 +62,8 @@
     DialogFailedEvent,
     DialogCloseStateChangedEvent,
     DialogVariantChangedEvent,
-  } from "/js/events.js";
-  import { shutdown } from "/js/controllers.js";
+  } from "{{ url_for('static', filename='js/events.js') }}";
+  import { shutdown } from "{{ url_for('static', filename='js/controllers.js') }}";
 
   (function () {
     const template = document.querySelector("#shutdown-dialog-template");

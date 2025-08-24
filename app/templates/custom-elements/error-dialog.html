@@ -1,6 +1,6 @@
 <template id="error-dialog-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     #message {
       margin-bottom: 2em;
@@ -55,7 +55,7 @@
 </template>
 
 <script type="module">
-  import { DialogClosedEvent } from "/js/events.js";
+  import { DialogClosedEvent } from "{{ url_for('static', filename='js/events.js') }}";
 
   (function () {
     const template = document.querySelector("#error-dialog-template");

@@ -1,6 +1,6 @@
 <template id="feature-pro-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
   </style>
 
   <div id="feature-pro">
@@ -18,7 +18,7 @@
 </template>
 
 <script type="module">
-  import { DialogClosedEvent } from "/js/events.js";
+  import { DialogClosedEvent } from "{{ url_for('static', filename='js/events.js') }}";
 
   const template = document.querySelector("#feature-pro-template");
 

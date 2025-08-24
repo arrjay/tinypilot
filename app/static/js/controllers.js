@@ -60,7 +60,7 @@ async function processJsonResponse(response) {
 }
 
 export async function getLatestRelease() {
-  return fetch("/api/latestRelease", {
+  return fetch(baseAppPath + "/api/latestRelease", {
     method: "GET",
     mode: "same-origin",
     cache: "no-cache",
@@ -79,7 +79,7 @@ export async function getLatestRelease() {
 }
 
 export async function getVersion() {
-  return fetch("/api/version", {
+  return fetch(baseAppPath + "/api/version", {
     method: "GET",
     mode: "same-origin",
     cache: "no-cache",
@@ -96,9 +96,9 @@ export async function getVersion() {
 }
 
 export async function shutdown(restart) {
-  let route = "/api/shutdown";
+  let route = baseAppPath + "/api/shutdown";
   if (restart) {
-    route = "/api/restart";
+    route = baseAppPath + "/api/restart";
   }
   return fetch(route, {
     method: "POST",
@@ -129,7 +129,7 @@ export async function shutdown(restart) {
 }
 
 export async function update() {
-  return fetch("/api/update", {
+  return fetch(baseAppPath + "/api/update", {
     method: "PUT",
     headers: {
       "X-CSRFToken": getCsrfToken(),
@@ -141,7 +141,7 @@ export async function update() {
 }
 
 export async function getUpdateStatus() {
-  return fetch("/api/update", {
+  return fetch(baseAppPath + "/api/update", {
     method: "GET",
     mode: "same-origin",
     cache: "no-cache",
@@ -162,7 +162,7 @@ export async function getUpdateStatus() {
 }
 
 export async function determineHostname() {
-  return fetch("/api/hostname", {
+  return fetch(baseAppPath + "/api/hostname", {
     method: "GET",
     mode: "same-origin",
     cache: "no-cache",
@@ -179,7 +179,7 @@ export async function determineHostname() {
 }
 
 export async function changeHostname(newHostname) {
-  return fetch("/api/hostname", {
+  return fetch(baseAppPath + "/api/hostname", {
     method: "PUT",
     mode: "same-origin",
     cache: "no-cache",
@@ -195,7 +195,7 @@ export async function changeHostname(newHostname) {
 }
 
 export async function getNetworkStatus() {
-  return fetch("/api/network/status", {
+  return fetch(baseAppPath + "/api/network/status", {
     method: "GET",
     mode: "same-origin",
     cache: "no-cache",
@@ -222,7 +222,7 @@ export async function getNetworkStatus() {
 }
 
 export async function getWifiSettings() {
-  return fetch("/api/network/settings/wifi", {
+  return fetch(baseAppPath + "/api/network/settings/wifi", {
     method: "GET",
     mode: "same-origin",
     cache: "no-cache",
@@ -241,7 +241,7 @@ export async function getWifiSettings() {
 }
 
 export async function enableWifi(countryCode, ssid, psk) {
-  return fetch("/api/network/settings/wifi", {
+  return fetch(baseAppPath + "/api/network/settings/wifi", {
     method: "PUT",
     mode: "same-origin",
     cache: "no-cache",
@@ -257,7 +257,7 @@ export async function enableWifi(countryCode, ssid, psk) {
 }
 
 export async function disableWifi() {
-  return fetch("/api/network/settings/wifi", {
+  return fetch(baseAppPath + "/api/network/settings/wifi", {
     method: "DELETE",
     mode: "same-origin",
     cache: "no-cache",
@@ -272,7 +272,7 @@ export async function disableWifi() {
 }
 
 export async function checkStatus(baseURL = "") {
-  return fetch(baseURL + "/api/status", {
+  return fetch(baseURL + baseAppPath + "/api/status", {
     method: "GET",
     mode: "cors",
     cache: "no-cache",
@@ -283,7 +283,7 @@ export async function checkStatus(baseURL = "") {
 }
 
 export async function getDebugLogs() {
-  return fetch("/api/debugLogs", {
+  return fetch(baseAppPath + "/api/debugLogs", {
     method: "GET",
     mode: "same-origin",
     cache: "no-cache",
@@ -319,7 +319,7 @@ export async function textToShareableUrl(text) {
 }
 
 export async function getVideoSettings() {
-  return fetch("/api/settings/video", {
+  return fetch(baseAppPath + "/api/settings/video", {
     method: "GET",
     mode: "same-origin",
     cache: "no-cache",
@@ -357,7 +357,7 @@ export async function saveVideoSettings({
   h264StunServer,
   h264StunPort,
 }) {
-  return fetch("/api/settings/video", {
+  return fetch(baseAppPath + "/api/settings/video", {
     method: "PUT",
     mode: "same-origin",
     cache: "no-cache",
@@ -378,7 +378,7 @@ export async function saveVideoSettings({
 }
 
 export async function applyVideoSettings() {
-  return fetch("/api/settings/video/apply", {
+  return fetch(baseAppPath + "/api/settings/video/apply", {
     method: "POST",
     mode: "same-origin",
     cache: "no-cache",
@@ -390,7 +390,7 @@ export async function applyVideoSettings() {
 }
 
 export async function getLicensingMetadata() {
-  return fetch("/licensing", {
+  return fetch(baseAppPath + "/licensing", {
     method: "GET",
     mode: "same-origin",
     cache: "no-cache",
@@ -399,7 +399,7 @@ export async function getLicensingMetadata() {
 }
 
 export async function isMjpegStreamAvailable() {
-  return fetch("/stream", {
+  return fetch(baseAppPath + "/stream", {
     method: "HEAD",
     mode: "same-origin",
     cache: "no-cache",
@@ -410,7 +410,7 @@ export async function isMjpegStreamAvailable() {
 }
 
 export async function pasteText(text, language) {
-  return fetch("/api/paste", {
+  return fetch(baseAppPath + "/api/paste", {
     method: "POST",
     mode: "same-origin",
     cache: "no-cache",

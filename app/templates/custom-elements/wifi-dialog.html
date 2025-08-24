@@ -3,7 +3,7 @@
      this for code symbols, however, mainly for simplicity. -->
 <template id="wifi-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     #initializing,
     #prompt,
@@ -160,14 +160,14 @@
     DialogFailedEvent,
     DialogCloseStateChangedEvent,
     DialogVariantChangedEvent,
-  } from "/js/events.js";
+  } from "{{ url_for('static', filename='js/events.js') }}";
   import {
     getNetworkStatus,
     getWifiSettings,
     enableWifi,
     disableWifi,
-  } from "/js/controllers.js";
-  import { COUNTRY_CODES } from "/js/wifi.js";
+  } from "{{ url_for('static', filename='js/controllers.js') }}";
+  import { COUNTRY_CODES } from "{{ url_for('static', filename='js/wifi.js') }}";
 
   (function () {
     const template = document.querySelector("#wifi-template");

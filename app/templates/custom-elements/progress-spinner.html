@@ -1,6 +1,6 @@
 <template id="progress-spinner-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     :host {
       --size: 5rem;

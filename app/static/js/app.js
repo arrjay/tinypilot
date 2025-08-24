@@ -7,9 +7,12 @@ import { OverlayTracker } from "./overlays.js";
 // Suppress ESLint warnings about undefined variables.
 // `io` is defined by the Socket.IO library, which is globally available on the
 // page.
+// 'baseAppPath' is defined in app/templates/index.html, and is exposing the
+// flask app route.
 /* global io */
+/* global baseAppPath */
 
-const socket = io();
+const socket = io(window.location.protocol + '//' + window.location.host + '/', { path: baseAppPath + 'socket.io' });
 let connectedToServer = false;
 
 const keyboardState = new KeyboardState();

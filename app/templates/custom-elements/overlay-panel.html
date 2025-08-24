@@ -1,6 +1,6 @@
 <template id="overlay-panel-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     #panel {
       position: relative;

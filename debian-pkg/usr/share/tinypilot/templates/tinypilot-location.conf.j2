@@ -1,22 +1,7 @@
 {% set tinypilot_path = '/usr/lib/tinypilot' %}
-upstream tinypilot {
-    server 127.0.0.1:48000 fail_timeout=1s max_fails=600;
-}
-upstream ustreamer {
-    server 127.0.0.1:48001 fail_timeout=1s max_fails=600;
-}
-upstream janus-ws {
-    # The host and port must match the variables in
-    # debian-pkg/usr/share/tinypilot/janus.transport.websockets.jcfg
-    server 127.0.0.1:48002 fail_timeout=1s max_fails=600;
-}
+{% set tinypilot_uri  = '/kvm' %}
 
-server {
-    listen {{ tinypilot_external_port }};
-    listen [::]:{{ tinypilot_external_port }};
-
-    server_name tinypilot;
-
+location {{ tinypilot_uri }} {
     root {{ tinypilot_path }};
 
     index index.html;
@@ -29,8 +14,9 @@ server {
 
     error_page 502 /502.html;
 
-    location /socket.io {
-        proxy_pass http://tinypilot;
+    location {{ tinypilot_uri }}/socket.io {
+        proxy_set_header X-Forwarded-Prefix {{ tinypilot_uri }};
+        proxy_pass http://tinypilot/socket.io;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "Upgrade";
         # Since this is a connection upgrade, we don't inherit the settings from
@@ -41,19 +27,19 @@ server {
         proxy_set_header X-Forwarded-Host $http_host;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
-    location /state {
-        proxy_pass http://ustreamer;
+    location {{ tinypilot_uri }}/state {
+        proxy_pass http://ustreamer/state;
     }
-    location /stream {
+    location {{ tinypilot_uri }}/stream {
         postpone_output 0;
         proxy_buffering off;
         proxy_ignore_headers X-Accel-Buffering;
-        proxy_pass http://ustreamer;
+        proxy_pass http://ustreamer/stream;
     }
-    location /snapshot {
-        proxy_pass http://ustreamer;
+    location {{ tinypilot_uri }}/snapshot {
+        proxy_pass http://ustreamer/snapshot;
     }
-    location /janus/ws {
+    location {{ tinypilot_uri }}/janus/ws {
         proxy_pass http://janus-ws;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "Upgrade";
@@ -64,10 +50,11 @@ server {
         proxy_set_header X-Forwarded-Port $server_port;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
-    location / {
-        proxy_pass http://tinypilot;
+    location {{ tinypilot_uri }} {
+        proxy_set_header X-Forwarded-Prefix {{ tinypilot_uri }};
+        proxy_pass http://tinypilot/;
     }
-    location ~* ^/.+\.(html|js|js.map|css|woff|woff2)$ {
+    location ~* ^{{ tinypilot_uri }}/.+\.(html|js|js.map|css|woff|woff2)$ {
         root "{{ tinypilot_path }}/app/static";
 
         # We cache assets to prevent the browser from making redundant
@@ -79,7 +66,7 @@ server {
         add_header Last-Modified $date_gmt;
         add_header Cache-Control 'public, max-age=10s';
     }
-    location ~* ^/.+\.(jpg|jpeg|png|ico)$ {
+    location ~* ^{{ tinypilot_uri }}/.+\.(jpg|jpeg|png|ico)$ {
         root "{{ tinypilot_path }}/app/static";
     }
 }

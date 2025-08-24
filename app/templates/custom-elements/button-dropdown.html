@@ -1,6 +1,6 @@
 <template id="dropdown-button-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     :host {
       --offset-top: 1rem;

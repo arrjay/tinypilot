@@ -1,6 +1,6 @@
 <template id="share-logs-button-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     #get-url-button,
     #get-url-button progress-spinner,
@@ -104,15 +104,15 @@
       </a>
     </div>
     <button id="copy-button" class="btn-action" title="Copy Link to Clipboard">
-      <img src="/img/clipboard-icon.svg" alt="Copy" />
+      <img src="{{ url_for('static', filename='img/clipboard-icon.svg') }}" alt="Copy" />
       <span>Copied!</span>
     </button>
   </div>
 </template>
 
 <script type="module">
-  import { copyElementTextToClipboard } from "/js/clipboard.js";
-  import { textToShareableUrl } from "/js/controllers.js";
+  import { copyElementTextToClipboard } from "{{ url_for('static', filename='js/clipboard.js') }}";
+  import { textToShareableUrl } from "{{ url_for('static', filename='js/controllers.js') }}";
 
   (function () {
     const template = document.querySelector("#share-logs-button-template");

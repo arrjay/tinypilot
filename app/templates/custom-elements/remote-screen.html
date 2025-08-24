@@ -1,6 +1,6 @@
 <template id="remote-screen-template">
   <style>
-    @import "css/cursors.css";
+    @import "{{ url_for('static', filename='css/cursors.css') }}";
 
     :host {
       --menu-bar-height: 45px;
@@ -70,9 +70,9 @@
 </template>
 
 <script type="module">
-  import { RateLimitedMouse } from "/js/mouse.js";
-  import { TouchToMouseAdapter } from "/js/touch.js";
-  import { VideoStreamingModeChangedEvent } from "/js/events.js";
+  import { RateLimitedMouse } from "{{ url_for('static', filename='js/mouse.js') }}";
+  import { TouchToMouseAdapter } from "{{ url_for('static', filename='js/touch.js') }}";
+  import { VideoStreamingModeChangedEvent } from "{{ url_for('static', filename='js/events.js') }}";
 
   (function () {
     const template = document.querySelector("#remote-screen-template");
@@ -511,7 +511,7 @@
           if (this._elements.image.hasAttribute("src")) {
             return;
           }
-          this._elements.image.src = "/stream?advance_headers=1";
+          this._elements.image.src = "{{ url_for('static', filename='/stream', advance_headers='1') }}";
           this.webrtcEnabled = false;
           // Clean up the media stream. (See comment in `connectedCallback`.)
           this._elements.video.srcObject = null;

@@ -1,6 +1,6 @@
 <template id="network-status-dialog-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     #initializing,
     #display {
@@ -41,8 +41,8 @@
     DialogClosedEvent,
     DialogCloseStateChangedEvent,
     DialogFailedEvent,
-  } from "/js/events.js";
-  import { getNetworkStatus } from "/js/controllers.js";
+  } from "{{ url_for('static', filename='js/events.js') }}";
+  import { getNetworkStatus } from "{{ url_for('static', filename='js/controllers.js') }}";
 
   (function () {
     const template = document.querySelector("#network-status-dialog-template");

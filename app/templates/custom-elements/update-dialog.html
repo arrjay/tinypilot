@@ -1,6 +1,6 @@
 <template id="update-dialog-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     #checking,
     #update-available,
@@ -112,14 +112,14 @@
 </template>
 
 <script type="module">
-  import { poll } from "/js/poll.js";
+  import { poll } from "{{ url_for('static', filename='js/poll.js') }}";
   import {
     DialogClosedEvent,
     DialogFailedEvent,
     DialogCloseStateChangedEvent,
     DialogVariantChangedEvent,
-  } from "/js/events.js";
-  import { UpdateLogsStreamer } from "/js/updatelogs.js";
+  } from "{{ url_for('static', filename='js/events.js') }}";
+  import { UpdateLogsStreamer } from "{{ url_for('static', filename='js/updatelogs.js') }}";
   import {
     checkStatus,
     getLatestRelease,
@@ -127,7 +127,7 @@
     getVersion,
     shutdown,
     update,
-  } from "/js/controllers.js";
+  } from "{{ url_for('static', filename='js/controllers.js') }}";
 
   (function () {
     const template = document.querySelector("#update-dialog-template");

@@ -1,7 +1,7 @@
 <template id="debug-dialog-template">
   <style>
-    @import "css/style.css";
-    @import "css/toggle.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
+    @import "{{ url_for('static', filename='css/toggle.css') }}";
 
     #logs-loading,
     #logs-success {
@@ -64,9 +64,9 @@
     DialogClosedEvent,
     DialogFailedEvent,
     DialogCloseStateChangedEvent,
-  } from "/js/events.js";
-  import { getDebugLogs } from "/js/controllers.js";
-  import { redactSensitiveData } from "/js/logs.js";
+  } from "{{ url_for('static', filename='js/events.js') }}";
+  import { getDebugLogs } from "{{ url_for('static', filename='js/controllers.js') }}";
+  import { redactSensitiveData } from "{{ url_for('static', filename='js/logs.js') }}";
 
   (function () {
     const template = document.querySelector("#debug-dialog-template");

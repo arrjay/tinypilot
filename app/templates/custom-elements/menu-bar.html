@@ -1,6 +1,6 @@
 <template id="menu-bar-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     a {
       color: white;
@@ -190,14 +190,14 @@
       content: "";
       top: 0.8em;
       right: 0.8em;
-      background: url("/img/external-link-icon.svg") no-repeat;
+      background: url("{{ url_for('static', filename='img/external-link-icon.svg') }}") no-repeat;
       background-size: var(--icon-size) var(--icon-size);
       width: var(--icon-size);
       height: var(--icon-size);
     }
   </style>
 
-  <div class="logo"><img src="/img/logo.svg" alt="TinyPilot logo" /></div>
+  <div class="logo"><img src="{{ url_for('static', filename='img/logo.svg') }}" alt="TinyPilot logo" /></div>
 
   <ul
     class="groups header-item prevent-flickering-on-page-load"

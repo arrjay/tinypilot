@@ -6,6 +6,7 @@ import os
 import flask
 import flask_wtf
 from werkzeug import exceptions
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # We’re importing the log package first because it needs to overwrite the
 # app-wide logger class before any other module loads it.
@@ -37,6 +38,8 @@ logger = logging.getLogger(__name__)
 logger.info('Starting app')
 
 app = flask.Flask(__name__, static_url_path='')
+# allow for routing this app under a different uri path via proxy.
+app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
 app.config.update(
     SECRET_KEY=secret_key.get_or_create(),
     TEMPLATES_AUTO_RELOAD=True,

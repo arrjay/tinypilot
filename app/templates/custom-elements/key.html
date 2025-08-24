@@ -62,7 +62,7 @@
 </template>
 
 <script type="module">
-  import { isModifierCode } from "/js/keycodes.js";
+  import { isModifierCode } from "{{ url_for('static', filename='js/keycodes.js') }}";
 
   (function () {
     const template = document.querySelector("#key-template");

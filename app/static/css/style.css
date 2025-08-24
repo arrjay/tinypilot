@@ -223,7 +223,7 @@ button:disabled,
 }
 
 .btn-external-link {
-  background-image: url("/img/external-link-icon.svg");
+  background-image: url("../img/external-link-icon.svg");
   background-repeat: no-repeat;
   background-position: top 49% right 1.2em;
   background-size: 0.75em;

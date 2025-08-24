@@ -18,7 +18,10 @@
 // Suppress ESLint warnings about undefined variables.
 // Janus is defined by the Janus library, which is globally available on the
 // page.
+// 'baseAppPath' is defined in app/templates/index.html, and is exposing the
+// flask app route.
 /* global Janus */
+/* global baseAppPath */
 
 // Parameters for the setup.
 const config = {
@@ -50,7 +53,7 @@ const remoteScreen = document.getElementById("remote-screen");
 
 // Establish connection to the server.
 const janus = new Janus({
-  server: `${config.useSSL ? "wss" : "ws"}://${config.deviceHostname}/janus/ws`,
+  server: `${config.useSSL ? "wss" : "ws"}://${config.deviceHostname}${baseAppPath}/janus/ws`,
   success: attachToJanusPlugin,
   iceServers:
     config.stunServer && config.stunPort

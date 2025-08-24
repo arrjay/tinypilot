@@ -10,13 +10,13 @@
   <head>
     <meta charset="utf-8" />
     <title>TinyPilot Styleguide</title>
-    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <style>
-    @import "css/icons.css";
-    @import "css/toggle.css";
+    @import "{{ url_for('static', filename='css/icons.css') }}";
+    @import "{{ url_for('static', filename='css/toggle.css') }}";
 
     body {
       /* Override to prevent dark-mode, otherwise we would need to make several
@@ -54,7 +54,7 @@
           padding: 1rem;
         "
       >
-        <img src="/img/logo.svg" alt="Tiny Pilot" />
+        <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Tiny Pilot" />
       </div>
 
       <h1 style="text-align: center">Style Guide</h1>
@@ -435,7 +435,7 @@
         <button class="close-overlay-with-primary-action">Close</button>
       </overlay-panel>
       <script type="module">
-        import { DialogClosedEvent } from "/js/events.js";
+        import { DialogClosedEvent } from "{{ url_for('static', filename='js/events.js') }}";
 
         document
           .getElementById("show-overlay-with-primary-action-btn")
@@ -508,7 +508,7 @@
         </div>
       </overlay-panel>
       <script type="module">
-        import { DialogClosedEvent } from "/js/events.js";
+        import { DialogClosedEvent } from "{{ url_for('static', filename='js/events.js') }}";
 
         function setDialogState(newState /* = "initial" or "secondary" */) {
           document.getElementById(
@@ -586,7 +586,7 @@
         Open Success Overlay
       </button>
       <script type="module">
-        import { DialogClosedEvent } from "/js/events.js";
+        import { DialogClosedEvent } from "{{ url_for('static', filename='js/events.js') }}";
 
         document
           .getElementById("show-success-overlay-btn")

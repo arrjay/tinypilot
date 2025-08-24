@@ -1,6 +1,6 @@
 <template id="video-stream-indicator-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     :host {
       position: relative;
@@ -59,7 +59,7 @@
     }
   </style>
 
-  <img src="/img/video-stream-icon.svg" class="icon" alt="Video Stream" />
+  <img src="{{ url_for('static', filename='img/video-stream-icon.svg') }}" class="icon" alt="Video Stream" />
   <span class="label-mjpeg">MJPEG</span>
   <span class="label-h264">H.264</span>
   <div class="status-bar-tooltip">
@@ -91,7 +91,7 @@
       <p>See “System”&nbsp;&gt; “Logs” for diagnostic details.</p>
     </div>
   </div>
-  <img src="/img/warning-icon.svg" class="warning-icon" alt="Warning" />
+  <img src="{{ url_for('static', filename='img/warning-icon.svg') }}" class="warning-icon" alt="Warning" />
 </template>
 
 <script type="module">

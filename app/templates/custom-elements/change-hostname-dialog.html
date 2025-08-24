@@ -1,6 +1,6 @@
 <template id="change-hostname-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     #initializing,
     #prompt,
@@ -81,19 +81,19 @@
 </template>
 
 <script type="module">
-  import { poll } from "/js/poll.js";
+  import { poll } from "{{ url_for('static', filename='js/poll.js') }}";
   import {
     DialogClosedEvent,
     DialogFailedEvent,
     DialogCloseStateChangedEvent,
-  } from "/js/events.js";
+  } from "{{ url_for('static', filename='js/events.js') }}";
   import {
     changeHostname,
     checkStatus,
     determineHostname,
     shutdown,
-  } from "/js/controllers.js";
-  import { determineFutureOrigin } from "/js/hostname.js";
+  } from "{{ url_for('static', filename='js/controllers.js') }}";
+  import { determineFutureOrigin } from "{{ url_for('static', filename='js/hostname.js') }}";
 
   (function () {
     const template = document.querySelector("#change-hostname-template");

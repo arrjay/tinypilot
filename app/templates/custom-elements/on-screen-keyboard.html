@@ -17,7 +17,7 @@
      *   a rare use-case anyway.
      */
 
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     :host {
       --key-size: 46px; /* Must be divisible by 2 */
@@ -84,7 +84,7 @@
     }
   </style>
   <img
-    src="/img/angle-down-icon.svg"
+    src="{{ url_for('static', filename='img/angle-down-icon.svg') }}"
     id="collapse-button"
     title="Collapse Keyboard"
   />

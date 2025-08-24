@@ -1,7 +1,7 @@
 <template id="paste-dialog-template">
   <style>
-    @import "css/style.css";
-    @import "css/toggle.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
+    @import "{{ url_for('static', filename='css/toggle.css') }}";
 
     #paste-area {
       display: block;
@@ -74,9 +74,9 @@
 </template>
 
 <script type="module">
-  import { DialogClosedEvent, DialogFailedEvent } from "/js/events.js";
-  import { pasteText } from "/js/controllers.js";
-  import { isPasteAreaMasked, setPasteAreaMasked } from "/js/settings.js";
+  import { DialogClosedEvent, DialogFailedEvent } from "{{ url_for('static', filename='js/events.js') }}";
+  import { pasteText } from "{{ url_for('static', filename='js/controllers.js') }}";
+  import { isPasteAreaMasked, setPasteAreaMasked } from "{{ url_for('static', filename='js/settings.js') }}";
 
   (function () {
     const template = document.querySelector("#paste-dialog-template");

@@ -1,6 +1,6 @@
 <template id="about-dialog-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
 
     .content {
       text-align: left;
@@ -69,8 +69,8 @@
 </template>
 
 <script type="module">
-  import { DialogClosedEvent, DialogFailedEvent } from "/js/events.js";
-  import { getLicensingMetadata, getVersion } from "/js/controllers.js";
+  import { DialogClosedEvent, DialogFailedEvent } from "{{ url_for('static', filename='js/events.js') }}";
+  import { getLicensingMetadata, getVersion } from "{{ url_for('static', filename='js/controllers.js') }}";
 
   (function () {
     const template = document.querySelector("#about-dialog-template");
