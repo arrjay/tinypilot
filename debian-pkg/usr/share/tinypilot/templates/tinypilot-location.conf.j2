@@ -55,6 +55,7 @@ location {{ tinypilot_uri }} {
         proxy_pass http://tinypilot/;
     }
     location ~* ^{{ tinypilot_uri }}/.+\.(html|js|js.map|css|woff|woff2)$ {
+        rewrite ^{{ tinypilot_uri }}(/.*)$ $1 break;
         root "{{ tinypilot_path }}/app/static";
 
         # We cache assets to prevent the browser from making redundant
@@ -67,6 +68,7 @@ location {{ tinypilot_uri }} {
         add_header Cache-Control 'public, max-age=10s';
     }
     location ~* ^{{ tinypilot_uri }}/.+\.(jpg|jpeg|png|ico)$ {
+        rewrite ^{{ tinypilot_uri }}(/.*)$ $1 break;
         root "{{ tinypilot_path }}/app/static";
     }
 }
