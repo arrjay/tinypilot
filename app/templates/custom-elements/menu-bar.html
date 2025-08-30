@@ -215,7 +215,8 @@
         </li>
         <li class="item" role="presentation">
           <a data-onclick-event="update-dialog-requested" role="menuitem"
-            >Update</a
+            >{% if not config.OFFICIAL_APP %}<s>{% endif %}
+             Update{% if not config.OFFICIAL_APP %}</s>{% endif %}</a
           >
         </li>
         <li class="item subgroup" role="presentation">

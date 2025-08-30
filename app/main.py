@@ -17,6 +17,7 @@ import json_response
 import license_notice
 import secret_key
 import socket_api
+import version
 import views
 from find_files import find as find_files
 
@@ -44,6 +45,7 @@ app.config.update(
     SECRET_KEY=secret_key.get_or_create(),
     TEMPLATES_AUTO_RELOAD=True,
     WTF_CSRF_TIME_LIMIT=None,
+    OFFICIAL_APP=False,
 )
 
 # Configure CSRF protection.

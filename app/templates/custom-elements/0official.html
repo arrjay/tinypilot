@@ -1,0 +1,13 @@
+<script
+  type="text/javascript">
+  officialBuild = true;
+</script>
+<script
+  type="module">
+  import { checkOfficial } from "{{ url_for('static', filename='js/controllers.js') }}";
+  Promise.all([checkOfficial()]).then(([localOfficial]) => {
+    if(localOfficial.isOfficial === false) {
+      officialBuild = false;
+    }
+  });
+</script>
