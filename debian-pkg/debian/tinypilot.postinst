@@ -101,14 +101,6 @@ cp \
   /usr/share/tinypilot/nginx_response_headers.conf \
   /etc/nginx/snippets/response-headers.conf
 
-# Test and reload NGINX config.
-nginx -t
-if deb-systemd-invoke is-active nginx; then
-  deb-systemd-invoke reload nginx
-else
-  deb-systemd-invoke start nginx
-fi
-
 # Restore the Janus config files.
 /usr/libexec/tinypilot-privileged/scripts/configure-janus
 cp \
@@ -119,8 +111,5 @@ cp \
 cp \
   /usr/share/tinypilot/janus.service \
   /etc/systemd/system/janus.service
-
-# Restart Janus to pick up the new config files.
-deb-systemd-invoke restart janus
 
 #DEBHELPER#
