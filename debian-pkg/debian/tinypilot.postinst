@@ -112,4 +112,7 @@ cp \
   /usr/share/tinypilot/janus.service \
   /etc/systemd/system/janus.service
 
+# enable HID service
+deb-systemd-invoke enable usb-gadget-tinypilot-hid
+
 #DEBHELPER#
