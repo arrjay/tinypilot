@@ -1,0 +1,1 @@
+SUBSYSTEM==hidg, MODE="0660", GROUP="tinypilot"
