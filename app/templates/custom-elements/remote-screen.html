@@ -521,7 +521,7 @@
             document.exitPointerLock();
             this._elements.image.requestPointerLock();
           }
-          this._elements.image.src = "/stream?advance_headers=1";
+          this._elements.image.src = "{{ url_for('static', filename='/stream', advance_headers='1') }}";
           this.webrtcEnabled = false;
           // Clean up the media stream. (See comment in `connectedCallback`.)
           this._elements.video.srcObject = null;
