@@ -98,6 +98,9 @@ def latest_version():
         VersionRequestError: If an error occurred while making an HTTP request
             to the Gatekeeper API.
     """
+    if not official_version():
+        raise VersionRequestError(
+            f'Not an Official TinyPilot Build')
     try:
         # The URL is trusted because it's not based on user input.
         # pylint: disable=line-too-long
