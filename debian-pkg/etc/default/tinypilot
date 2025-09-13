@@ -1,0 +1,8 @@
+# configure mouse mode presented in the usb gadget interface.
+# the default presents dual mouse interfaces
+#  on the usb composite device.
+# if you set the mouse mode to absolute, only absolute positioning
+# mode is presented (this is the tinypilot default mouse protocol)
+# if you set the mouse mode to relative, only relative positioning
+# mode is presented
+#MOUSE_MODE=relative

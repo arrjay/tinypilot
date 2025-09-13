@@ -10,6 +10,9 @@ readonly SCRIPT_DIR
 # shellcheck source=lib/usb-gadget.sh
 source "${SCRIPT_DIR}/lib/usb-gadget.sh"
 
+# load a config from /etc/default
+[[ -e /etc/default/tinypilot ]] && . /etc/default/tinypilot
+
 print_help() {
   cat << EOF
 Usage: ${0##*/} [-h]
