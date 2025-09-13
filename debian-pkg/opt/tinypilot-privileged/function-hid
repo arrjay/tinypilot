@@ -177,10 +177,10 @@ ln -s "${USB_KEYBOARD_FUNCTIONS_DIR}" "${USB_CONFIG_DIR}/"
 # MOUSE_MODE = absolute|relative|both - or not set or whatever. This is pretty
 #   flexible here. Just be sure to exclude one of the mice if a single-mouse mode
 #   is specified.
-if [[ "${MOUSE_MODE}" != "relative" ]]; then
+if [[ "${MOUSE_MODE:-}" != "relative" ]]; then
   ln -s "${USB_MOUSE_FUNCTIONS_DIR}" "${USB_CONFIG_DIR}/"
 fi
-if [[ "${MOUSE_MODE}" != "absolute" ]]; then
+if [[ "${MOUSE_MODE:-}" != "absolute" ]]; then
   ln -s "${USB_MOUSE_REL_FUNCTIONS_DIR}" "${USB_CONFIG_DIR}/"
 fi
 }
