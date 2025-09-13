@@ -1,1 +1,1 @@
-SUBSYSTEM=="hidg", MODE="0660", GROUP="tinypilot"
+SUBSYSTEM=="hidg", ACTION=="add", MODE="0660", GROUP="tinypilot", RUN+="/usr/libexec/tinypilot-privileged/label-hid-dev %M %m %k"
