@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -eux
+
+err () {
+  printf '%s\n' "${@}" 1>&2
+}
+
+die () {
+  err "${@}"
+  exit 1
+}
+
+umask 0022
+
+FUNCTIONS_DIR='/sys/kernel/config/usb_gadget/g/functions'
+TINYPILOT_HID_DIR='/dev/tinypilot-hid-gadget'
+
+# we expect two arguments - a major and a minor devno
+[[ "${#@}" -eq 3 ]] || die 'need major, minor device numbers, device name'
+tmag="${1}"
+tmin="${2}"
+dnode="${3}"
+
+[[ -e "${FUNCTIONS_DIR}" ]] || die "did not find function directory at ${FUNCTIONS_DIR}"
+
+for devfile in "${FUNCTIONS_DIR}"/*/dev ; do
+  IFS=: read -r rmaj rmin < "${devfile}"
+  case "${rmaj} ${rmin}" in
+    "${tmag} ${tmin}")
+      destname="${devfile#"${FUNCTIONS_DIR}"/}" ; destname="${destname%/dev}" ; destname="${destname////-}"
+      mkdir -p "${TINYPILOT_HID_DIR}"
+      ln -s "../${dnode}" "${TINYPILOT_HID_DIR}/${destname}"
+    ;;
+  esac
+done
