@@ -51,7 +51,7 @@ def on_mouse_event(message):
         return {'success': False}
     try:
         if mouse_move_event.is_relative:
-            mouse_path = flask.current_app.config.get('RELATIVE_MOUSE_PATH')
+            mouse_path = env.RELATIVE_MOUSE_PATH
             fake_mouse.send_relative_mouse_event(
                 mouse_path, mouse_move_event.buttons,
                 mouse_move_event.relative_x, mouse_move_event.relative_y,
