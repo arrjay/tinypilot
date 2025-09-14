@@ -253,13 +253,13 @@ function normalizeWheelDelta(delta) {
  * @property {number} relativeX - For absolute events: A value between 0.0 and
  *     1.0 representing the mouse's relative x-offset from the left edge of the
  *     screen. For relative events: A signed integer representing the change
- *     in x position from the previous mouse event. (For practicality, the value
- *     is limited to +/- 32767 here.)
+ *     in x position from the previous mouse event. (For compatibility, the value
+ *     is limited to +127/-128 here.)
  * @property {number} relativeY - For absolute events: A value between 0.0 and
  *     1.0 representing the mouse's relative y-offset from the top edge of the
  *     screen. For relative events: A signed integer representing the change
- *     in y position from the previous mouse event. (For practicality, the value
- *     is limited to +/- 32767 here.)
+ *     in y position from the previous mouse event. (For compatibility, the value
+ *     is limited to +127/-128 here.)
  * @property {number} verticalWheelDelta - A -1, 0, or 1 representing movement
  *     of the mouse's vertical scroll wheel.
  * @property {number} horizontalWheelDelta - A -1, 0, or 1 representing movement
@@ -278,12 +278,12 @@ function parseMouseEvent(evt, isRelative, speed) {
       isRelative: true,
       buttons: evt.buttons,
       relativeX: Math.min(
-        32767,
-        Math.max(-32767, parseInt(evt.movementX * speed))
+        127,
+        Math.max(-128, parseInt(evt.movementX * speed))
       ),
       relativeY: Math.min(
-        32767,
-        Math.max(-32767, parseInt(evt.movementY * speed))
+        127,
+        Math.max(-128, parseInt(evt.movementY * speed))
       ),
       verticalWheelDelta: normalizeWheelDelta(evt.deltaY),
       horizontalWheelDelta: normalizeWheelDelta(evt.deltaX),
