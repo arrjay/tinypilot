@@ -436,7 +436,6 @@ export async function disableWifi() {
  */
 export async function checkStatus(baseURL = "", signal) {
   return fetch(baseURL + baseAppPath + "api/status", {
-export async function checkStatus(baseURL = "", signal) {
     method: "GET",
     mode: "cors",
     cache: "no-cache",
