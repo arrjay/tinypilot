@@ -3,6 +3,7 @@ import { KeyboardState } from "./keyboardstate.js";
 import { sendKeystroke } from "./keystrokes.js";
 import * as settings from "./settings.js";
 import { OverlayTracker } from "./overlays.js";
+import { logout } from "./controllers.js";
 
 // Suppress ESLint warnings about undefined variables.
 // `io` is defined by the Socket.IO library, which is globally available on the
@@ -337,7 +338,6 @@ menuBar.addEventListener("shutdown-dialog-requested", () => {
 });
 menuBar.addEventListener("update-dialog-requested", () => {
   document.getElementById("update-overlay").show();
-  document.getElementById("update-dialog").checkVersion();
 });
 menuBar.addEventListener("change-hostname-dialog-requested", () => {
   document.getElementById("change-hostname-overlay").show();
@@ -360,17 +360,29 @@ menuBar.addEventListener("about-dialog-requested", () => {
 menuBar.addEventListener("mass-storage-dialog-requested", () => {
   document.getElementById("feature-pro-overlay").show();
 });
+menuBar.addEventListener("video-settings-dialog-requested", () => {
+  document.getElementById("video-settings-overlay").show();
+});
+menuBar.addEventListener("paste-dialog-requested", () => {
+  document.getElementById("paste-overlay").show();
+});
 menuBar.addEventListener("wake-on-lan-dialog-requested", () => {
   document.getElementById("feature-pro-overlay").show();
 });
 menuBar.addEventListener("static-ip-dialog-requested", () => {
   document.getElementById("feature-pro-overlay").show();
 });
-menuBar.addEventListener("video-settings-dialog-requested", () => {
-  document.getElementById("video-settings-overlay").show();
+menuBar.addEventListener("tailscale-dialog-requested", () => {
+  document.getElementById("feature-pro-overlay").show();
 });
-menuBar.addEventListener("paste-dialog-requested", () => {
-  document.getElementById("paste-overlay").show();
+menuBar.addEventListener("ssh-dialog-requested", () => {
+  document.getElementById("feature-pro-overlay").show();
+});
+menuBar.addEventListener("https-dialog-requested", () => {
+  document.getElementById("https-overlay").show();
+});
+menuBar.addEventListener("manage-users-dialog-requested", () => {
+  document.getElementById("manage-users-overlay").show();
 });
 menuBar.addEventListener("ctrl-alt-del-requested", () => {
   // Even though only the final keystroke matters, send them one at a time to
@@ -445,6 +457,16 @@ menuBar.addEventListener("alt-tab-requested", () => {
   });
 });
 
+menuBar.addEventListener("logout-requested", () => {
+  logout()
+    .then(() => {
+      window.location.replace("/login");
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+});
+
 setKeystrokeHistoryStatus(settings.isKeystrokeHistoryEnabled());
 
 document
@@ -462,6 +484,10 @@ document
 
 document.addEventListener("dialog-failed", (evt) => {
   showError(evt.detail);
+});
+
+document.addEventListener("secure-connection-required", () => {
+  document.getElementById("secure-connection-required-overlay").show();
 });
 
 const shutdownDialog = document.getElementById("shutdown-dialog");

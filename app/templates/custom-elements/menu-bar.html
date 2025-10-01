@@ -169,6 +169,23 @@
       right: 10px;
     }
 
+    #logout-button {
+      font-size: 0.92em;
+      text-transform: uppercase;
+    }
+
+    {% if not requires_authentication %}
+    #logout-button {
+      display: none;
+    }
+    {% endif %}
+
+    {% if not is_admin %}
+    .admin-only {
+      display: none;
+    }
+    {% endif %}
+
     .pro-badge:after {
       position: absolute;
       display: block;
@@ -205,9 +222,31 @@
     role="menubar"
   >
     <!-- The “System” menu is used for managing the TinyPilot device itself. -->
-    <li class="group" role="presentation">
+    <li class="group admin-only" role="presentation">
       <a role="menuitem">System</a>
       <ul class="items" role="group">
+        <li class="item subgroup" role="presentation">
+          <a role="menuitem">Security</a>
+          <ul class="items" role="group">
+            <li class="item" role="presentation">
+              <a
+                data-onclick-event="manage-users-dialog-requested"
+                role="menuitem"
+                >Users</a
+              >
+            </li>
+            <li class="item pro-badge" role="presentation">
+              <a data-onclick-event="ssh-dialog-requested" role="menuitem"
+                >SSH</a
+              >
+            </li>
+            <li class="item" role="presentation">
+              <a data-onclick-event="https-dialog-requested" role="menuitem"
+                >HTTPS</a
+              >
+            </li>
+          </ul>
+        </li>
         <li class="item pro-badge" role="presentation">
           <a data-onclick-event="mass-storage-dialog-requested" role="menuitem"
             >Virtual Media</a
@@ -237,6 +276,11 @@
             <li class="item pro-badge" role="presentation">
               <a data-onclick-event="static-ip-dialog-requested" role="menuitem"
                 >Static IP</a
+              >
+            </li>
+            <li class="item pro-badge" role="presentation">
+              <a data-onclick-event="tailscale-dialog-requested" role="menuitem"
+                >Tailscale</a
               >
             </li>
             <li class="item" role="presentation">
@@ -353,7 +397,7 @@
       </ul>
     </li>
 
-    <!-- The ”Help” menu contains miscellaneous, subsidiary links and info. -->
+    <!-- The “Help” menu contains miscellaneous, subsidiary links and info. -->
     <li class="group" role="presentation">
       <a role="menuitem">Help</a>
       <ul class="items" role="group">
@@ -377,12 +421,17 @@
             rel="noopener noreferrer"
             target="_blank"
             role="menuitem"
-            >Github</a
+            >GitHub</a
           >
         </li>
       </ul>
     </li>
   </ul>
+
+  <div style="flex: 1; margin-right: 2em"><!-- Spacer --></div>
+  <div id="logout-button">
+    <a data-onclick-event="logout-requested" role="menuitem">Logout</a>
+  </div>
 </template>
 
 <script type="module">

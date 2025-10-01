@@ -196,6 +196,154 @@ export async function determineHostname() {
     });
 }
 
+export async function getUsers() {
+  return fetch(baseAppPath + "api/users")
+    .then(processJsonResponse)
+    .then((data) => {
+      // eslint-disable-next-line no-prototype-builtins
+      if (!data.hasOwnProperty("users")) {
+        throw new ControllerError("Missing expected users field");
+      }
+      // eslint-disable-next-line no-prototype-builtins
+      if (!data.hasOwnProperty("currentUsername")) {
+        throw new ControllerError("Missing expected currentUsername field");
+      }
+      return { users: data.users, currentUsername: data.currentUsername };
+    });
+}
+
+export async function deleteAllUsers() {
+  return fetch(baseAppPath + "api/users", {
+    method: "DELETE",
+    mode: "same-origin",
+    cache: "no-cache",
+    redirect: "error",
+    headers: {
+      "X-CSRFToken": getCsrfToken(),
+      "Content-Type": "application/json",
+    },
+  }).then(processJsonResponse);
+}
+
+export async function addUser(username, password, role) {
+  return fetch(baseAppPath + "api/user", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCsrfToken(),
+      "Content-Type": "application/json",
+    },
+    credentials: "same-origin",
+    mode: "same-origin",
+    cache: "no-cache",
+    redirect: "error",
+    body: JSON.stringify({ username, password, role }),
+  })
+    .then(processJsonResponse)
+    .then((data) => {
+      // eslint-disable-next-line no-prototype-builtins
+      if (!data.hasOwnProperty("username")) {
+        throw new ControllerError("Missing expected username field");
+      }
+      return { username: data.username };
+    });
+}
+
+export async function updateUserPassword(username, password) {
+  return fetch(baseAppPath + "api/user/password", {
+    method: "PUT",
+    headers: {
+      "X-CSRFToken": getCsrfToken(),
+      "Content-Type": "application/json",
+    },
+    credentials: "same-origin",
+    mode: "same-origin",
+    cache: "no-cache",
+    redirect: "error",
+    body: JSON.stringify({ username, password }),
+  }).then(processJsonResponse);
+}
+
+export async function deleteUser(username) {
+  return fetch(baseAppPath + "api/user", {
+    method: "DELETE",
+    mode: "same-origin",
+    cache: "no-cache",
+    redirect: "error",
+    headers: {
+      "X-CSRFToken": getCsrfToken(),
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ username }),
+  })
+    .then(processJsonResponse)
+    .then((data) => {
+      // eslint-disable-next-line no-prototype-builtins
+      if (!data.hasOwnProperty("username")) {
+        throw new ControllerError("Missing expected username field");
+      }
+      return { username: data.username };
+    });
+}
+
+export async function login(username, password) {
+  return fetch(baseAppPath + "api/auth", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCsrfToken(),
+      "Content-Type": "application/json",
+    },
+    credentials: "same-origin",
+    mode: "same-origin",
+    cache: "no-cache",
+    redirect: "error",
+    body: JSON.stringify({ username, password }),
+  }).then(processJsonResponse);
+}
+
+export async function logout() {
+  return fetch(baseAppPath + "api/logout", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCsrfToken(),
+    },
+    credentials: "same-origin",
+    mode: "same-origin",
+    cache: "no-cache",
+    redirect: "error",
+  }).then(processJsonResponse);
+}
+
+export async function requiresHttps() {
+  return fetch(baseAppPath + "api/settings/requiresHttps", {
+    method: "GET",
+    mode: "same-origin",
+    cache: "no-cache",
+    redirect: "error",
+  })
+    .then(processJsonResponse)
+    .then((data) => {
+      // eslint-disable-next-line no-prototype-builtins
+      if (!data.hasOwnProperty("requiresHttps")) {
+        throw new ControllerError("Missing expected requiresHttps field");
+      }
+      return data.requiresHttps;
+    });
+}
+
+export async function setRequiresHttps(shouldBeRequired) {
+  return fetch(baseAppPath + "api/settings/requiresHttps", {
+    method: "PUT",
+    mode: "same-origin",
+    cache: "no-cache",
+    redirect: "error",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCsrfToken(),
+    },
+    body: JSON.stringify({ requiresHttps: shouldBeRequired }),
+  }).then(processJsonResponse);
+}
+
 export async function changeHostname(newHostname) {
   return fetch(baseAppPath + "api/hostname", {
     method: "PUT",
@@ -279,12 +427,21 @@ export async function disableWifi() {
     .then(() => true);
 }
 
-export async function checkStatus(baseURL = "") {
+/**
+ * Checks the status of the TinyPilot server.
+ * @param {string} [baseURL] - The URL origin of the TinyPilot server.
+ * @param {AbortSignal} [signal] - The signal that can be used to abort the
+ * asynchronous request.
+ * @returns {Promise<Response>} https://developer.mozilla.org/en-US/docs/Web/API/Response
+ */
+export async function checkStatus(baseURL = "", signal) {
   return fetch(baseURL + baseAppPath + "api/status", {
+export async function checkStatus(baseURL = "", signal) {
     method: "GET",
     mode: "cors",
     cache: "no-cache",
     redirect: "error",
+    signal,
   })
     .then(processJsonResponse)
     .then(() => true);

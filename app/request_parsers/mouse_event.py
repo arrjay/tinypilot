@@ -5,7 +5,11 @@ class Error(Exception):
     pass
 
 
-class MissingFieldErrorError(Error):
+class MalformedMessageError(Error):
+    pass
+
+
+class MissingFieldError(Error):
     pass
 
 
@@ -55,6 +59,28 @@ class MouseEvent:
 
 
 def parse_mouse_event(message):
+    """Parses a mouse event from a JSON dictionary.
+
+    Args:
+        message: A JSON dictionary with the following fields:
+            (int) buttons
+            (float) relativeX
+            (float) relativeY
+            (int) verticalWheelDelta
+            (int) horizontalWheelDelta
+
+    Returns:
+        A MouseEvent object.
+
+    Raises:
+        MalformedMessageError: If the request payload is malformed.
+        MissingFieldError: If a required field is missing from the JSON payload.
+        InvalidButtonStateError: If the `buttons` field has an invalid value.
+        InvalidRelativePositionError: If the `relativeX` or `relativeY` fields
+            has an invalid value.
+        InvalidWheelValueError: If the `verticalWheelDelta` or
+            `horizontalWheelDelta` fields has an invalid value.
+    """
     if not isinstance(message, dict):
         raise MissingFieldErrorError(
             'Mouse event parameter is invalid, expecting a dictionary data type'
