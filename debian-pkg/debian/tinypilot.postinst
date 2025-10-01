@@ -56,38 +56,33 @@ if ! grep \
     "${TINYPILOT_SETTINGS_FILE}"; then
   # Generate NGINX CA keys.
   if [[ ! -e /etc/ssl/certs/tinypilot-ca.crt ]]; then
-    /opt/tinypilot-privileged/scripts/generate-nginx-ca-keypair
+    /usr/libexec/tinypilot-privileged/scripts/generate-nginx-ca-keypair
   fi
   # Generate NGINX TLS keys.
   if [[ ! -e /etc/ssl/certs/tinypilot-nginx.crt ]]; then
-    /opt/tinypilot-privileged/scripts/cycle-nginx-tls-keys
+    /usr/libexec/tinypilot-privileged/scripts/cycle-nginx-tls-keys
   fi
 fi
 
-tc358743_overlay_enabled='false'
-if grep --silent '^dtoverlay=tc358743$' "${BOOT_CONFIG_PATH}" ; then
-  tc358743_overlay_enabled='true'
+# Enable TC358743-audio overlay in /boot/config.txt.
+# Note that the tc358743-audio overlay depends on the tc358743 overlay.
+#sed --in-place --expression '/dtoverlay=tc358743-audio/d' "${BOOT_CONFIG_PATH}"
+#sed --in-place '/dtoverlay=tc358743/ a dtoverlay=tc358743-audio' "${BOOT_CONFIG_PATH}"
 
-  # Enable TC358743-audio overlay in /boot/config.txt.
-  # Note that the tc358743-audio overlay depends on the tc358743 overlay.
-  sed --in-place --expression '/dtoverlay=tc358743-audio/d' "${BOOT_CONFIG_PATH}"
-  sed --in-place '/dtoverlay=tc358743/ a dtoverlay=tc358743-audio' "${BOOT_CONFIG_PATH}"
+# Set GPU memory to 256MB in /boot/config.txt
+#if grep --silent '^gpu_mem=' "${BOOT_CONFIG_PATH}" ; then
+#  sed --in-place '/^gpu_mem=/ c\gpu_mem=256' "${BOOT_CONFIG_PATH}"
+#else
+#  echo 'gpu_mem=256' | tee --append "${BOOT_CONFIG_PATH}"
+#fi
 
-  # Set GPU memory to 256MB in /boot/config.txt
-  if grep --silent '^gpu_mem=' "${BOOT_CONFIG_PATH}" ; then
-    sed --in-place '/^gpu_mem=/ c\gpu_mem=256' "${BOOT_CONFIG_PATH}"
-  else
-    echo 'gpu_mem=256' | tee --append "${BOOT_CONFIG_PATH}"
-  fi
-
-  # Populate TinyPilot's EDID.
-  mkdir -p /home/ustreamer/edids
-  runuser tinypilot \
-    --command 'PYTHONPATH=/opt/tinypilot/app /usr/lib/tinypilot/venv/bin/python /usr/lib/tinypilot/scripts/render-template' \
-    <<< '{{ ustreamer_edid }}' \
-    > /home/ustreamer/edids/tc358743-edid.hex
-  chmod 0644 /home/ustreamer/edids/tc358743-edid.hex
-fi
+# Populate TinyPilot's EDID.
+mkdir -p /home/ustreamer/edids
+runuser tinypilot \
+  --command 'PYTHONPATH=/usr/lib/tinypilot/app /usr/lib/tinypilot/venv/bin/python /usr/lib/tinypilot/scripts/render-template' \
+  <<< '{{ ustreamer_edid }}' \
+  > /home/ustreamer/edids/tc358743-edid.hex
+chmod 0644 /home/ustreamer/edids/tc358743-edid.hex
 
 # Populate TinyPilot's Janus settings file.
 readonly JANUS_PLUGIN_USTREAMER_CONFIG='/etc/janus/janus.plugin.ustreamer.jcfg'
@@ -148,11 +143,6 @@ cp \
 cp \
   /usr/share/tinypilot/janus.transport.websockets.jcfg \
   /etc/janus/janus.transport.websockets.jcfg
-
-# Override Janus systemd config.
-cp \
-  /usr/share/tinypilot/janus.service \
-  /etc/systemd/system/janus.service
 
 # enable HID service
 deb-systemd-invoke enable usb-gadget-tinypilot-hid
