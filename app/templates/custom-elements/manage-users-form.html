@@ -87,7 +87,7 @@
 </template>
 
 <script type="module">
-  import { addUser, updateUserPassword, deleteUser } from "/js/controllers.js";
+  import { addUser, updateUserPassword, deleteUser } from "{{ url_for('static', filename='js/controllers.js') }}";
 
   class UserAddedEvent extends CustomEvent {
     /**

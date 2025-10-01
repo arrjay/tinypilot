@@ -20,7 +20,7 @@ attacks.
 </template>
 
 <script type="module">
-  import { DialogClosedEvent } from "/js/events.js";
+  import { DialogClosedEvent } from "{{ url_for('static', filename='js/events.js') }}";
 
   const template = document.querySelector(
     "#secure-connection-required-template"

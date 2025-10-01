@@ -135,8 +135,8 @@
       </div>
     </form>
     <script type="module">
-      import { login } from "/js/controllers.js";
-      import { determineRedirectParams } from "/js/login.js";
+      import { login } from "{{ url_for('static', filename='js/controllers.js') }}";
+      import { determineRedirectParams } from "{{ url_for('static', filename='js/login.js') }}";
 
       function sendLoginRequest(username, password) {
         login(username, password)

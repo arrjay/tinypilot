@@ -105,8 +105,8 @@
     DialogFailedEvent,
     DialogCloseStateChangedEvent,
     SecureConnectionRequiredEvent,
-  } from "/js/events.js";
-  import { getUsers, deleteAllUsers } from "/js/controllers.js";
+  } from "{{ url_for('static', filename='js/events.js') }}";
+  import { getUsers, deleteAllUsers } from "{{ url_for('static', filename='js/controllers.js') }}";
 
   class AllUsersRemovedEvent extends CustomEvent {
     /**

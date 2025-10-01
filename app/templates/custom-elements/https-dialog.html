@@ -53,8 +53,8 @@
     DialogFailedEvent,
     DialogCloseStateChangedEvent,
     SecureConnectionRequiredEvent,
-  } from "/js/events.js";
-  import { requiresHttps, setRequiresHttps } from "/js/controllers.js";
+  } from "{{ url_for('static', filename='js/events.js') }}";
+  import { requiresHttps, setRequiresHttps } from "{{ url_for('static', filename='js/controllers.js') }}";
 
   (function () {
     const template = document.querySelector("#https-dialog-template");
