@@ -385,6 +385,7 @@ def version_get():
 
 
 @api_blueprint.route('/checkOfficial', methods=['GET'])
+@required_auth(auth.Role.OPERATOR)
 def version_official():
     """Retrieves if the TinyPilot installation is an official build.
 
