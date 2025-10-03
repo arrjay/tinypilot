@@ -47,12 +47,17 @@ readonly TINYPILOT_CA_CERTIFICATE_KEY_DIR
 # Create directories if required.
 mkdir -p "${TINYPILOT_CA_CERTIFICATE_KEY_DIR}"
 
-# Generate the key and the CSR at the same time.
+# Generate the key
+openssl ecparam \
+  -name secp384r1 \
+  -genkey \
+  -noout \
+ > "${TINYPILOT_CA_CERTIFICATE_KEY}"
+
+# Generate the CA CSR
 openssl req \
   -new \
-  -newkey rsa:4096 \
-  -nodes \
-  -keyout "${TINYPILOT_CA_CERTIFICATE_KEY}" \
+  -key "${TINYPILOT_CA_CERTIFICATE_KEY}" \
   -out "${TINYPILOT_CA_CSR}" \
   -subj "/CN=tinypilot-ca" \
   -addext "subjectAltName = DNS:tinypilot-ca" \
