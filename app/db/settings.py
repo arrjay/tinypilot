@@ -62,6 +62,31 @@ class Settings:
             'UPDATE settings SET streaming_mode=? WHERE id=?',
             [streaming_mode.value, _ROW_ID])
 
+    def get_gpio_kvm_script(self):
+        """Retrieves path to a simple gpio-controlling (flip) script for a KVM
+
+        If there is no setting in the database, it returns False
+
+        Returns:
+            string or False.
+        """
+        cursor = self._db_connection.execute(
+            'SELECT gpio_kvm_script FROM settings WHERE id=?', [_ROW_ID])
+        raw_value = _fetch_single_value(cursor, "")
+        if raw_value == "":
+            return False
+        else:
+            return raw_value
+
+    def set_gpio_kvm_script(self, script_path):
+        """Store a path to a kvm-gpio script.
+
+        Args:
+            script_path: string. filesystem path to script.
+        """
+        self._db_connection.execute(
+            'UPDATE settings SET gpio_kvm_script=? WHERE id=?',
+            [script_path, _ROW_ID])
 
 def _fetch_single_value(connection_cursor, default_value):
     """Helper method to resolve a query for one single value."""

@@ -37,3 +37,24 @@ def set_https_mode(_args):
             db.settings.Settings().set_requires_https(0)
     except Exception as e:
         raise e
+
+@command('show-kvm-gpio-script')
+def show_kvm_gpio_script(_args):
+    """Prints if a KVM GPIO Script is configured."""
+    kvm_gpio_script = db.settings.Settings().get_gpio_kvm_script()
+    if not kvm_gpio_script:
+        print("There is no GPIO KVM Script configured.")
+    else:
+        print(kvm_gpio_script)
+
+@command('set-kvm-gpio-script')
+def set_kvm_gpio_script(_args):
+    """Configures a GPIO KVM Script for Tinypilot"""
+    try:
+        if len(_args) < 2:
+            script = ''
+        else:
+            script = _args[1]
+        db.settings.Settings().set_gpio_kvm_script(script)
+    except Exception as e:
+        raise e
