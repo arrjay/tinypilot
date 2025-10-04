@@ -262,7 +262,7 @@ class MouseEventTest(unittest.TestCase):
             mouse_event.parse_mouse_event('Malformed message')
 
     def test_rejects_missing_is_relative_field(self):
-        with self.assertRaises(mouse_event.MissingFieldErrorError):
+        with self.assertRaises(mouse_event.MissingFieldError):
             mouse_event.parse_mouse_event({
                 'buttons': 0,
                 'relativeX': 0,

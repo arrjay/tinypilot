@@ -82,14 +82,14 @@ def parse_mouse_event(message):
             `horizontalWheelDelta` fields has an invalid value.
     """
     if not isinstance(message, dict):
-        raise MissingFieldErrorError(
+        raise MalformedMessageError(
             'Mouse event parameter is invalid, expecting a dictionary data type'
         )
     required_fields = ('isRelative', 'buttons', 'relativeX', 'relativeY',
                        'verticalWheelDelta', 'horizontalWheelDelta')
     for field in required_fields:
         if field not in message:
-            raise MissingFieldErrorError(
+            raise MissingFieldError(
                 f'Mouse event request is missing required field: {field}')
     is_rel = bool(message['isRelative'])
     if is_rel:
