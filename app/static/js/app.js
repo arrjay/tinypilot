@@ -3,7 +3,7 @@ import { KeyboardState } from "./keyboardstate.js";
 import { sendKeystroke } from "./keystrokes.js";
 import * as settings from "./settings.js";
 import { OverlayTracker } from "./overlays.js";
-import { logout } from "./controllers.js";
+import { logout, toggleGpioKvm } from "./controllers.js";
 
 // Suppress ESLint warnings about undefined variables.
 // `io` is defined by the Socket.IO library, which is globally available on the
@@ -465,6 +465,10 @@ menuBar.addEventListener("logout-requested", () => {
     .catch((error) => {
       console.error(error);
     });
+});
+
+menuBar.addEventListener("kvm-relay-toggle-requested", () => {
+  toggleGpioKvm();
 });
 
 setKeystrokeHistoryStatus(settings.isKeystrokeHistoryEnabled());

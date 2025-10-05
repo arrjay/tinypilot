@@ -330,6 +330,17 @@
             >Wake on LAN</a
           >
         </li>
+        {% if config.KVM_ACTIONS_ENABLED %}
+        <li class="item subgroup" role="presentation">
+          <a role="menutem">KVM Actions</a>
+          <ul class="items" role=group">
+            <li class="item" role="presentation">
+              <a data-onclick-event="kvm-relay-toggle-requested" role="menuitem"
+                >Toggle Input</a
+              >
+          </ul>
+        </li>
+        {% endif %}
         <li class="item subgroup" role="presentation">
           <a role="menuitem">Keyboard Shortcuts</a>
           <ul class="items" role="group">

@@ -22,6 +22,7 @@ import request_parsers.paste
 import request_parsers.requires_https
 import request_parsers.video_settings
 import session
+import subprocess
 import update.launcher
 import update.settings
 import update.status
@@ -841,3 +842,26 @@ def paste_post():
                               args=(keyboard_path, keystrokes))
 
     return json_response.success()
+
+@api_blueprint.route('/kvm-toggle-gpio', methods=['POST'])
+@required_auth(auth.Role.OPERATOR)
+def toggle_kvm_gpio():
+    """Runs an external script to toggle GPIO lines controlling a KVM
+
+    Expects no further input.
+    """
+    try:
+        script = db.settings.Settings().get_gpio_kvm_script()
+        if script:
+            cmd_output = subprocess.check_output([
+                '/usr/bin/sudo',
+                script,
+            ],
+                                                 stderr=subprocess.STDOUT,
+                                                 universal_newlines=True)
+        else:
+            raise Error(f'CONFIG ERROR: Missing gpio kvm script path')
+    except subprocess.CalledProcessError as e:
+        raise network.NetworkError(str(e.output).strip()) from e
+    except Error as e:
+        raise network.NetworkError(e)

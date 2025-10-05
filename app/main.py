@@ -52,6 +52,7 @@ app.config.update(
     TEMPLATES_AUTO_RELOAD=True,
     WTF_CSRF_TIME_LIMIT=None,
     OFFICIAL_APP=False,
+    KVM_ACTIONS_ENABLED=db.settings.Settings().get_gpio_kvm_script(),
 )
 
 # Configure cookie security.
