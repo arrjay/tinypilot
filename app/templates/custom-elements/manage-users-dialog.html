@@ -1,7 +1,7 @@
 <template id="manage-users-dialog-template">
   <style>
-    @import "css/style.css";
-    @import "css/toggle.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
+    @import "{{ url_for('static', filename='css/toggle.css') }}";
 
     #loading,
     #edit,
