@@ -334,10 +334,20 @@
         <li class="item subgroup" role="presentation">
           <a role="menutem">KVM Actions</a>
           <ul class="items" role=group">
+            {% if config.KVM_ACTIONS_GPIO_TOGGLE %}
             <li class="item" role="presentation">
               <a data-onclick-event="kvm-relay-toggle-requested" role="menuitem"
                 >Toggle Input</a
               >
+            </li>
+            {% endif %}
+            {% if config.KVM_ACTIONS_ATEN_PORTS %}
+            <li class="item" role="presentation">
+              <a data-onclick-event="kvm-aten-reset" role="menuitem"
+                >[ATEN] Reset KVM</a
+              >
+            </li>
+            {% endif %}
           </ul>
         </li>
         {% endif %}
