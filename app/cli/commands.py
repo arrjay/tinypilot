@@ -58,3 +58,21 @@ def set_kvm_gpio_script(_args):
         db.settings.Settings().set_gpio_kvm_script(script)
     except Exception as e:
         raise e
+
+@command('show-kvm-aten-ports')
+def show_kvm_aten_ports(_args):
+    """Prints how many ATEN KVM ports are configured"""
+    aten_kvm_ports = db.settings.Settings().get_kvm_aten_portcount()
+    print(aten_kvm_ports)
+
+@command('set-kvm-aten-ports')
+def set_kvm_aten_ports(_args):
+    """Configures the amount of ATEN KVM ports supported. Use 0 for no ports."""
+    try:
+        if len(_args) < 2:
+            ports = 0
+        else:
+            ports = _args[1]
+        db.settings.Settings().set_kvm_aten_portcount(ports)
+    except Exception as e:
+        raise e

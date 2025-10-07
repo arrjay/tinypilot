@@ -471,6 +471,30 @@ menuBar.addEventListener("kvm-relay-toggle-requested", () => {
   toggleGpioKvm();
 });
 
+// send keystroke commands to cycle to a specific port on an ATEN KVM.
+// mostly because not everyone *has* Scroll Lock these days...
+function atenPortSelect(port) {
+  processKeystroke({
+    key: "ScrollLock",
+    code: "ScrollLock",
+  });
+  processKeystroke({
+    key: "ScrollLock",
+    code: "ScrollLock",
+  });
+  processKeystroke({
+    key: port,
+    code: "Digit" + port,
+  });
+  processKeystroke({
+    key: "Enter",
+    code: "Enter",
+  });
+}
+menuBar.addEventListener("aten-port-requested", (evt) => {
+  atenPortSelect(evt.detail.port);
+});
+
 setKeystrokeHistoryStatus(settings.isKeystrokeHistoryEnabled());
 
 document

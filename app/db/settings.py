@@ -62,6 +62,19 @@ class Settings:
             'UPDATE settings SET streaming_mode=? WHERE id=?',
             [streaming_mode.value, _ROW_ID])
 
+    def get_kvm_menu_enabled(self):
+        """Retrieves a composite setting determing if the KVM Actions menu
+        should be drawn.
+
+        Returns:
+            Boolean.
+        """
+        if self.get_gpio_kvm_script():
+            return True
+        if self.get_kvm_aten_portcount() > 0:
+            return True
+        return False
+
     def get_gpio_kvm_script(self):
         """Retrieves path to a simple gpio-controlling (flip) script for a KVM
 
@@ -87,6 +100,26 @@ class Settings:
         self._db_connection.execute(
             'UPDATE settings SET gpio_kvm_script=? WHERE id=?',
             [script_path, _ROW_ID])
+
+    def get_kvm_aten_portcount(self):
+        """Retrieves the number of ports on an ATEN KVM (for port selection)
+
+        Returns:
+            Number.
+        """
+        cursor = self._db_connection.execute(
+            'SELECT aten_kvm_portnr FROM settings WHERE id=?', [_ROW_ID])
+        return _fetch_single_value(cursor, 0)
+
+    def set_kvm_aten_portcount(self, port_count):
+        """Configure the number of ports on an attached ATEN KVM.
+
+        Args:
+            port_count: number. count of ports in use (0 is no ports, no kvm)
+        """
+        self._db_connection.execute(
+            'UPDATE settings SET aten_kvm_portnr=? WHERE id=?',
+            [port_count, _ROW_ID])
 
 def _fetch_single_value(connection_cursor, default_value):
     """Helper method to resolve a query for one single value."""
