@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+
+# byte 1 is modifier mask
+# byte 2 is 0
+# bytes 3-6 are scan codes
+
+# an all-zeroes report will release all keys
+release_keys () {
+  echo -ne "\0\0\0\0\0\0\0\0"		# clear all keys
+}
+
+# 'standard' attention/hsm key sequence.
+aten_invoke_hsm () {
+  echo -ne "\0\0\x53\0\0\0\0\0"		# num lock
+  echo -ne "\0\0\x53\x56\0\0\0\0"	# num lock and -
+  echo -ne "\0\0\x53\0\0\0\0\0"		# num lock
+}
+
+# 'alternate' attention/ksm key sequence.
+aten_invoke_hsm_alt () {
+  echo -ne "\x10\0\0\0\0\0\0\0"		# right ctrl
+  echo -ne "\x10\0\x45\0\0\0\0\0"	# right ctrl and f12
+  echo -ne "\x10\0\0\0\0\0\0\0"		# right ctrl
+}
+
+aten_toggle_mouseemu () {
+  aten_invoke_hsm
+  release_keys
+  echo -ne "\0\0\x10\0\0\0\0\0" # letter m
+  release_keys
+}
+
+[[ "${1}" ]] || {
+  printf '%s\n' 1>&2 \
+    "$0: send usb hid report to configure ATEN KVM" \
+    'supported verbs:' \
+    ' reset - bring KVM unit into known state' \
+    ' report - have KVM unit send text dump of state to PC' \
+    ' sync-edid - synchronize downstream and upstream port EDIDs' \
+    '             (copy monitor EDID to PC ports)' \
+    ' toggle-mouse-emulation - switch on/off internal-to-kvm mouse emulation'
+  exit 1
+}
+
+exec > /dev/tinypilot-hid-gadget/hid.keyboard
+
+case "${1}" in
+reset)
+  # this should cope with the switch regardless of which
+  # keys invoke the hsm. emit both and reset from there.
+  release_keys
+  aten_invoke_hsm
+  release_keys
+  aten_invoke_hsm_alt
+  release_keys
+  echo -ne "\0\0\x15\0\0\0\0\0"	# letter r
+  echo -ne "\0\0\x28\0\0\0\0\0"	# enter
+  release_keys
+  # we need to give the aten unit a moment to cope
+  sleep 1
+  # turn *off* mouse emulation at this point.
+  aten_toggle_mouseemu
+;;
+switch-hsm-alt)
+  aten_invoke_hsm
+  echo -ne "\0\0\xb\0\0\0\0\0"	# letter h
+  release_keys
+;;
+report)
+  release_keys
+  aten_invoke_hsm
+  release_keys
+  echo -ne "\0\0\x3d\0\0\0\0\0"	# f4
+  release_keys
+  # the aten is typing out a report on the keyboard...
+  # IT IS NOT FAST, this is experimental from a 4-port switch
+  sleep 7
+  echo -ne "\0\0\x28\0\0\0\0\0"	# enter
+  release_keys
+;;
+sync-edid)
+  release_keys
+  aten_invoke_hsm
+  release_keys
+  echo -ne "\0\0\x7\0\0\0\0\0"	# letter d
+  release_keys
+;;
+toggle-mouse-emulation)
+  aten_toggle_mouseemu
+;;
+esac
