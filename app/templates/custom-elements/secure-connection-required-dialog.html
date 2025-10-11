@@ -7,7 +7,7 @@ attacks.
 
 <template id="secure-connection-required-template">
   <style>
-    @import "css/style.css";
+    @import "{{ url_for('static', filename='css/style.css') }}";
   </style>
 
   <h3>Security Settings Unavailable</h3>
