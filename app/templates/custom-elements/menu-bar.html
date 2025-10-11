@@ -342,10 +342,15 @@
             </li>
             {% endif %}
             {% if config.KVM_ACTIONS_ATEN_PORTS != 0 %}
-            <li class="item" role="presentation">
-              <a data-onclick-event="kvm-aten-reset" role="menuitem"
-                >[ATEN] Reset KVM</a
-              >
+            <li class="item subgroup" role="presentation">
+              <a role="menuitem">ATEN Unit Config</a>
+              <ul class="items" role="group">
+                <li class="item" role="presentation">
+                  <a data-onclick-event="kvm-aten-reset" role="menuitem"
+                    >[ATEN] Reset KVM</a
+                  >
+                </li>
+              </ul>
             </li>
             {% for _ in range(1, config.KVM_ACTIONS_ATEN_PORTS + 1) %}
             <li class="item" role="presentation">

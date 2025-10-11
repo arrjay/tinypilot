@@ -44,3 +44,7 @@ class UnsupportedPastedCharacterError(Error):
 
 class InvalidUserRoleError(Error):
     pass
+
+
+class InvalidAtenCommandError(Error):
+    pass

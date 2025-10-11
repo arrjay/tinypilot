@@ -3,7 +3,7 @@ import { KeyboardState } from "./keyboardstate.js";
 import { sendKeystroke } from "./keystrokes.js";
 import * as settings from "./settings.js";
 import { OverlayTracker } from "./overlays.js";
-import { logout, toggleGpioKvm } from "./controllers.js";
+import { logout, toggleGpioKvm, kvmAtenCommand } from "./controllers.js";
 
 // Suppress ESLint warnings about undefined variables.
 // `io` is defined by the Socket.IO library, which is globally available on the
@@ -471,6 +471,9 @@ menuBar.addEventListener("kvm-relay-toggle-requested", () => {
   toggleGpioKvm();
 });
 
+menuBar.addEventListener("kvm-aten-reset", () => {
+  kvmAtenCommand('reset');
+});
 // send keystroke commands to cycle to a specific port on an ATEN KVM.
 // mostly because not everyone *has* Scroll Lock these days...
 function atenPortSelect(port) {

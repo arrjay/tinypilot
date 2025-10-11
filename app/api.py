@@ -21,6 +21,7 @@ import request_parsers.network
 import request_parsers.paste
 import request_parsers.requires_https
 import request_parsers.video_settings
+import request_parsers.aten_control
 import session
 import subprocess
 import update.launcher
@@ -861,6 +862,39 @@ def toggle_kvm_gpio():
                                                  universal_newlines=True)
         else:
             raise Error(f'CONFIG ERROR: Missing gpio kvm script path')
+    except subprocess.CalledProcessError as e:
+        raise network.NetworkError(str(e.output).strip()) from e
+    except Error as e:
+        raise network.NetworkError(e)
+
+@api_blueprint.route('/aten-control-sequence', methods=['POST'])
+@required_auth(auth.Role.OPERATOR)
+def aten_control_seq():
+    """Runs the ATEN KVM control script with the action verb
+
+    Expects a JSON data structure in the request body that contains the
+    following parameters:
+    - command: string - (reset|switch-hsm-alt|report|sync-edid|toggle-mouse-emulation)
+
+    Example of request body:
+    {
+        "command": "reset"
+    }
+    """
+    try:
+        verb = request_parsers.aten_control.parse(flask.request)
+    except request_parsers.errors.Error as e:
+        return json_response.error(e), 400
+
+    try:
+        cmd_output = subprocess.check_output([
+            '/usr/lib/tinypilot/scripts/aten-control',
+            verb,
+        ],
+                                             stderr=subprocess.STDOUT,
+                                             universal_newlines=True)
+        return json_response.success()
+
     except subprocess.CalledProcessError as e:
         raise network.NetworkError(str(e.output).strip()) from e
     except Error as e:

@@ -585,3 +585,17 @@ export async function toggleGpioKvm() {
     }
   }).then(processJsonResponse);
 }
+
+export async function kvmAtenCommand(command) {
+  return fetch(baseAppPath + "api/aten-control-sequence", {
+    method: "POST",
+    mode: "same-origin",
+    cache: "no-cache",
+    redirect: "error",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCsrfToken(),
+    },
+    body: JSON.stringify({ command }),
+  }).then(processJsonResponse);
+}
