@@ -350,6 +350,21 @@
                     >[ATEN] Reset KVM</a
                   >
                 </li>
+                <li class="item" role="presentation">
+                  <a data-onclick-event="kvm-aten-sync-edid" role="menuitem"
+                    >[ATEN] Sync Video EDID</a
+                  >
+                </li>
+                <li class="item" role="presentation">
+                  <a data-onclick-event="kvm-aten-toggle-mouse-emulation" role="menuitem"
+                    >[ATEN] Toggle Mouse Emulation</a
+                  >
+                </li>
+                <li class="item" role="presentation">
+                  <a data-onclick-event="kvm-aten-report" role="menuitem"
+                    >[ATEN] Report KVM Status</a
+                  >
+                </li>
               </ul>
             </li>
             {% for _ in range(1, config.KVM_ACTIONS_ATEN_PORTS + 1) %}

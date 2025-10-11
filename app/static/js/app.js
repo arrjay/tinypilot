@@ -474,6 +474,15 @@ menuBar.addEventListener("kvm-relay-toggle-requested", () => {
 menuBar.addEventListener("kvm-aten-reset", () => {
   kvmAtenCommand('reset');
 });
+menuBar.addEventListener("kvm-aten-sync-edid", () => {
+  kvmAtenCommand('sync-edid');
+});
+menuBar.addEventListener("kvm-aten-toggle-mouse-emulation", () => {
+  kvmAtenCommand('toggle-mouse-emulation');
+});
+menuBar.addEventListener("kvm-aten-report", () => {
+  kvmAtenCommand('report');
+});
 // send keystroke commands to cycle to a specific port on an ATEN KVM.
 // mostly because not everyone *has* Scroll Lock these days...
 function atenPortSelect(port) {
