@@ -76,3 +76,21 @@ def set_kvm_aten_ports(_args):
         db.settings.Settings().set_kvm_aten_portcount(ports)
     except Exception as e:
         raise e
+
+@command('show-kvm-sview-ports')
+def show_kvm_sview_ports(_args):
+    """Prints how many Sview KVM ports are configured"""
+    sview_kvm_ports = db.settings.Settings().get_kvm_sview_portcount()
+    print(sview_kvm_ports)
+
+@command('set-kvm-sview-ports')
+def set_kvm_sview_ports(_args):
+    """Configures the amount of Sview KVM ports supported. Use 0 for no ports."""
+    try:
+        if len(_args) < 2:
+            ports = 0
+        else:
+            ports = _args[1]
+        db.settings.Settings().set_kvm_sview_portcount(ports)
+    except Exception as e:
+        raise e

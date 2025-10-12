@@ -507,6 +507,36 @@ menuBar.addEventListener("aten-port-requested", (evt) => {
   atenPortSelect(evt.detail.port);
 });
 
+function sviewPortSelect(port) {
+  processKeystroke({
+    ctrlLeft: true,
+    key: "Control",
+    code: "ControlLeft",
+  });
+  await new Promise(r => setTimeout(r, 100));
+  processKeystroke({
+    altLeft: true,
+    key: "Alt",
+    code: "AltLeft",
+  });
+  processKeystroke({
+    shiftLeft: true,
+    key: "Shift",
+    code: "ShiftLeft",
+  });
+  processKeystroke({
+    key: port,
+    code: "Digit" + port,
+  });
+  processKeystroke({
+    key: "Enter",
+    code: "Enter",
+  });
+}
+menuBar.addEventListener("sview-port-requested", (evt) => {
+  sviewPortSelect(evt.detail.port);
+});
+
 setKeystrokeHistoryStatus(settings.isKeystrokeHistoryEnabled());
 
 document

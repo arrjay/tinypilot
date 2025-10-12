@@ -69,6 +69,8 @@ class Settings:
         Returns:
             Boolean.
         """
+        if self.get_kvm_sview_portcount() > 0:
+            return True
         if self.get_gpio_kvm_script():
             return True
         if self.get_kvm_aten_portcount() > 0:
@@ -119,6 +121,26 @@ class Settings:
         """
         self._db_connection.execute(
             'UPDATE settings SET aten_kvm_portnr=? WHERE id=?',
+            [port_count, _ROW_ID])
+
+    def get_kvm_sview_portcount(self):
+        """Retrieves the number of ports on a Linksys SVIEW KVM (for port selection)
+
+        Returns:
+            Number.
+        """
+        cursor = self._db_connection.execute(
+            'SELECT sview_kvm_portnr FROM settings WHERE id=?', [_ROW_ID])
+        return _fetch_single_value(cursor, 0)
+
+    def set_kvm_sview_portcount(self, port_count):
+        """Configure the number of ports on an attached Linksys SVIEW KVM.
+
+        Args:
+            port_count: number. count of ports in use (0 is no ports, no kvm)
+        """
+        self._db_connection.execute(
+            'UPDATE settings SET sview_kvm_portnr=? WHERE id=?',
             [port_count, _ROW_ID])
 
 def _fetch_single_value(connection_cursor, default_value):

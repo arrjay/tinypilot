@@ -375,6 +375,15 @@
             </li>
             {% endfor %}
             {% endif %}
+            {% if config.KVM_ACTIONS_SVIEW_PORTS != 0 %}
+            {% for _ in range(1, config.KVM_ACTIONS_SVIEW_PORTS + 1) %}
+            <li class="item" role="presentation">
+              <a role="menuitem" sview-port="{{_}}" class="sview-port-select"
+                >[SVIEW] Select Port {{_}}</a
+              >
+            </li>
+            {% endfor %}
+            {% endif %}
           </ul>
         </li>
         {% endif %}
@@ -550,6 +559,14 @@
           this.shadowRoot.querySelectorAll('.aten-port-select').forEach((e) => {
             e.addEventListener("click", (evt) => {
               this.emitCustomEvent("aten-port-requested", { port: e.getAttribute("aten-port") });
+              evt.preventDefault();
+            });
+          });
+
+          // Add glue for SVIEW KVM events
+          this.shadowRoot.querySelectorAll('.sview-port-select').forEach((e) => {
+            e.addEventListener("click", (evt) => {
+              this.emitCustomEvent("sview-port-requested", { port: e.getAttribute("sview-port") });
               evt.preventDefault();
             });
           });

@@ -55,6 +55,7 @@ app.config.update(
     KVM_ACTIONS_ENABLED=db.settings.Settings().get_kvm_menu_enabled(),
     KVM_ACTIONS_GPIO_TOGGLE=db.settings.Settings().get_gpio_kvm_script(),
     KVM_ACTIONS_ATEN_PORTS=db.settings.Settings().get_kvm_aten_portcount(),
+    KVM_ACTIONS_SVIEW_PORTS=db.settings.Settings().get_kvm_sview_portcount(),
 )
 
 # Configure cookie security.
