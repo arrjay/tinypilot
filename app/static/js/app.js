@@ -513,7 +513,6 @@ function sviewPortSelect(port) {
     key: "Control",
     code: "ControlLeft",
   });
-  await new Promise(r => setTimeout(r, 100));
   processKeystroke({
     altLeft: true,
     key: "Alt",
