@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+
+set -eu
+
+help () {
+  printf '%s\n' 1>&2 \
+    "$0: select port ID on Linksys SVIEW KVM" \
+    "  requires a port ID (1-888)"
+  exit 1
+}
+
+err () {
+  printf '%s\n' "${1}" 1>&2
+  help
+}
+
+release_keys () {
+  echo -ne "\0\0\0\0\0\0\0\0"   # no keys
+}
+
+# this actually just selects a port, from 0-888 (decimal)
+# check for a valid port number
+[[ "${1:-}" ]] || help
+[[ "${1}" -lt 1 ]] && help
+[[ "${1}" -gt 888 ]] && help
+
+# port IDs are a sparse thing, depending on the levels set up.
+# 1 level (port IDs are   1-8  )
+[[ "${1}" -ge 9 ]] && [[ "${1}" -lt 11 ]] && { err "port IDs 9, 10 are invalid" ; }
+# 2 level (port IDs are  11-88 )
+[[ "${1}" -gt 88 ]] && [[ "${1}" -lt 111 ]] && { err "port IDs 89-110 are invalid" ; }
+# 3 level (port IDs are 111-888)
+# it's octalish, but you can't express 0 (you get 8 instead)
+[[ "${1//[12345678]/}" == "" ]] || { err "digits 9, 0 are invalid in port IDs" ; }
+
+portid="${1}"
+
+# type a single digit.
+digit2hidevt () {
+  local digit="${1}"
+  local keycode
+  case "${digit}" in
+    0) keycode='\x27' ;;
+    1) keycode='\x1e' ;;
+    2) keycode='\x1f' ;;
+    3) keycode='\x20' ;;
+    4) keycode='\x21' ;;
+    5) keycode='\x22' ;;
+    6) keycode='\x23' ;;
+    7) keycode='\x24' ;;
+    8) keycode='\x25' ;;
+    9) keycode='\x26' ;;
+    *) err "tried to use ${digit} as digit, could not look up" ;;
+  esac
+  echo -ne "\0\0${keycode}\0\0\0\0\0"
+  release_keys
+}
+
+# type a string (of digits)
+str2hidevts () {
+  local ct=0
+  local string="${1}"
+  while [[ "${ct}" -lt "${#string}" ]] ; do
+    digit2hidevt "${string:$ct:1}"
+    ct=$((ct + 1))
+  done
+}
+
+# KVM attention sequence is ctrl, alt, shift, port ID, enter.
+# you cannot type this at full tinypilot sending speed, though.
+exec > /dev/tinypilot-hid-gadget/hid.keyboard
+
+release_keys
+echo -ne "\x1\0\xe0\0\0\0\0\0" # ctrl
+release_keys
+echo -ne "\x4\0\xe2\0\0\0\0\0" # alt
+release_keys
+echo -ne "\x2\0\xe1\0\0\0\0\0" # shift
+release_keys
+# go unwind the port id string as hid codes (key/release seq.)
+str2hidevts "${portid}"
+echo -ne "\0\0\x28\0\0\0\0\0" # enter
+release_keys

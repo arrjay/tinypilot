@@ -48,3 +48,6 @@ class InvalidUserRoleError(Error):
 
 class InvalidAtenCommandError(Error):
     pass
+
+class InvalidSviewPortError(Error):
+    pass

@@ -3,7 +3,7 @@ import { KeyboardState } from "./keyboardstate.js";
 import { sendKeystroke } from "./keystrokes.js";
 import * as settings from "./settings.js";
 import { OverlayTracker } from "./overlays.js";
-import { logout, toggleGpioKvm, kvmAtenCommand } from "./controllers.js";
+import { logout, toggleGpioKvm, kvmAtenCommand, kvmSviewSelectPort } from "./controllers.js";
 
 // Suppress ESLint warnings about undefined variables.
 // `io` is defined by the Socket.IO library, which is globally available on the
@@ -507,33 +507,8 @@ menuBar.addEventListener("aten-port-requested", (evt) => {
   atenPortSelect(evt.detail.port);
 });
 
-function sviewPortSelect(port) {
-  processKeystroke({
-    ctrlLeft: true,
-    key: "Control",
-    code: "ControlLeft",
-  });
-  processKeystroke({
-    altLeft: true,
-    key: "Alt",
-    code: "AltLeft",
-  });
-  processKeystroke({
-    shiftLeft: true,
-    key: "Shift",
-    code: "ShiftLeft",
-  });
-  processKeystroke({
-    key: port,
-    code: "Digit" + port,
-  });
-  processKeystroke({
-    key: "Enter",
-    code: "Enter",
-  });
-}
 menuBar.addEventListener("sview-port-requested", (evt) => {
-  sviewPortSelect(evt.detail.port);
+  kvmSviewSelectPort(evt.detail.port);
 });
 
 setKeystrokeHistoryStatus(settings.isKeystrokeHistoryEnabled());

@@ -599,3 +599,17 @@ export async function kvmAtenCommand(command) {
     body: JSON.stringify({ command }),
   }).then(processJsonResponse);
 }
+
+export async function kvmSviewSelectPort(port) {
+  return fetch(baseAppPath + "api/sview-port-select", {
+    method: "POST",
+    mode: "same-origin",
+    cache: "no-cache",
+    redirect: "error",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCsrfToken(),
+    },
+    body: JSON.stringify({ id: parseInt(port) }),
+  }).then(processJsonResponse);
+}

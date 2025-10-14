@@ -22,6 +22,7 @@ import request_parsers.paste
 import request_parsers.requires_https
 import request_parsers.video_settings
 import request_parsers.aten_control
+import request_parsers.sview_port_req
 import session
 import subprocess
 import update.launcher
@@ -890,6 +891,39 @@ def aten_control_seq():
         cmd_output = subprocess.check_output([
             '/usr/lib/tinypilot/scripts/aten-control',
             verb,
+        ],
+                                             stderr=subprocess.STDOUT,
+                                             universal_newlines=True)
+        return json_response.success()
+
+    except subprocess.CalledProcessError as e:
+        raise network.NetworkError(str(e.output).strip()) from e
+    except Error as e:
+        raise network.NetworkError(e)
+
+@api_blueprint.route('/sview-port-select', methods=['POST'])
+@required_auth(auth.Role.OPERATOR)
+def sview_port_select():
+    """Selects a port by ID on a Linksys SVIEW KVM switch.
+
+    Expects a JSON data structure in the request body that contains the
+    following parameters:
+    - id: string - Octal-like (digits 1-8) port ID.
+
+    Example of request body:
+    {
+        "id": 6
+    }
+    """
+    try:
+        id = request_parsers.sview_port_req.parse(flask.request)
+    except request_parsers.errors.Error as e:
+        return json_response.error(e), 400
+
+    try:
+        cmd_output = subprocess.check_output([
+            '/usr/lib/tinypilot/scripts/sview-control',
+            str(id),
         ],
                                              stderr=subprocess.STDOUT,
                                              universal_newlines=True)
