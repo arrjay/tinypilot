@@ -75,7 +75,7 @@ Section: net
 Priority: optional
 Maintainer: RJ Bergeron <rj@produxi.net>
 Build-Depends:
-  debhelper (>= 11)
+  debhelper (>= 11),
   dh-virtualenv,
   python3-dev,
   python3-pip,
@@ -107,7 +107,7 @@ RUN mk-build-deps \
 
 RUN set -exu && \
     cat >changelog <<EOF
-tinypilot (${PKG_VERSION}) bullseye; urgency=medium
+tinypilot (${PKG_VERSION}) bookworm; urgency=medium
 
   * Latest TinyPilot release.
 
