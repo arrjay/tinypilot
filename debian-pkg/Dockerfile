@@ -90,9 +90,9 @@ Depends: \${shlibs:Depends},
   nginx,
   python3,
   sudo,
-  ustream,
+  ustreamer,
   yq,
-  usb-gadget-scriptser
+  usb-gadget-scripts
 Homepage: https://tinypilotkvm.com
 Description: Simple, easy-to-use KVM over IP
 XBS-Tinypilot-Version: ${TINYPILOT_VERSION}
