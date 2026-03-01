@@ -77,12 +77,13 @@ fi
 #fi
 
 # Populate TinyPilot's EDID.
-mkdir -p /home/ustreamer/edids
+readonly TINYPILOT_EDID_FILE="${TINYPILOT_HOME_DIR}/edid.hex"
 runuser tinypilot \
   --command 'PYTHONPATH=/usr/lib/tinypilot/app /usr/lib/tinypilot/venv/bin/python /usr/lib/tinypilot/scripts/render-template' \
   <<< '{{ ustreamer_edid }}' \
-  > /home/ustreamer/edids/tc358743-edid.hex
-chmod 0644 /home/ustreamer/edids/tc358743-edid.hex
+  > "${TINYPILOT_EDID_FILE}"
+chown "${TINYPILOT_USER}:${TINYPILOT_GROUP}" "${TINYPILOT_EDID_FILE}"
+chmod 0644 "${TINYPILOT_EDID_FILE}"
 
 # Populate TinyPilot's Janus settings file.
 readonly JANUS_PLUGIN_USTREAMER_CONFIG='/etc/janus/janus.plugin.ustreamer.jcfg'
@@ -98,7 +99,11 @@ readonly USTREAMER_LAUNCHER_CONFIG_DIR="${USTREAMER_LAUNCHER_BASE_DIR}/configs.d
 mkdir -p "${USTREAMER_LAUNCHER_CONFIG_DIR}"
 
 # Figure out which uStreamer settings file to use.
-USTREAMER_CONFIG_TARGET="${USTREAMER_LAUNCHER_BASE_DIR}/config-library/hdmi-to-usb.yml"
+if [[ "${PRODUCT_FAMILY:-}" == 'voyager' ]]; then
+  USTREAMER_CONFIG_TARGET="${USTREAMER_LAUNCHER_BASE_DIR}/config-library/tc358743.yml"
+else
+  USTREAMER_CONFIG_TARGET="${USTREAMER_LAUNCHER_BASE_DIR}/config-library/hdmi-to-usb.yml"
+fi
 readonly USTREAMER_CONFIG_TARGET
 
 readonly USTREAMER_BASE_CONFIG_FILE="${USTREAMER_LAUNCHER_CONFIG_DIR}/000-defaults.yml"

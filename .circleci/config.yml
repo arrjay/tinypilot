@@ -104,7 +104,10 @@ jobs:
           name: Install requirements and run lint script
           command: |
             . venv/bin/activate
-            pip install --requirement dev_requirements.txt
+            pip install --upgrade pip
+            pip install \
+              --requirement requirements.txt \
+              --requirement requirements_dev.txt
             ./dev-scripts/check-sql
   check_style:
     executor: node
@@ -117,7 +120,7 @@ jobs:
           name: Check code style
           command: ./dev-scripts/check-style
   decode_edid:
-    executor: python
+    executor: ubuntu
     resource_class: small
     steps:
       - checkout
@@ -125,26 +128,25 @@ jobs:
           name: Install edid-decode
           command: sudo apt-get update && sudo apt-get install --yes edid-decode
       - run:
-          name: Create virtual environment
-          command: python3 -m venv venv
-      - run:
-          name: Install requirements and decode the EDID
-          command: |
-            . venv/bin/activate
-            pip install --requirement requirements.txt
-            ./dev-scripts/decode-edid
+          name: Check pi4 EDID
+          command: edid-decode --check debian-pkg/usr/share/tinypilot/edid_pi4.hex
   check_python:
     executor: python
     steps:
       - checkout
       - run:
-          name: Create virtual environment
-          command: python3 -m venv venv
+          name: Install Python requirements of main app
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install \
+              --requirement requirements.txt \
+              --requirement requirements_dev.txt
       - run:
-          name: Install requirements and run build script
+          name: Run check script
           command: |
             . venv/bin/activate
-            pip install --requirement dev_requirements.txt
             ./dev-scripts/check-python
   check_javascript:
     executor: node
@@ -167,7 +169,10 @@ jobs:
           name: Install requirements
           command: |
             . venv/bin/activate
-            pip install --requirement dev_requirements.txt
+            pip install --upgrade pip
+            pip install \
+              --requirement requirements.txt \
+              --requirement requirements_dev.txt
       - run:
           name: Run Static Application Security Testing (SAST) on files
           command: |
@@ -188,13 +193,14 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Create virtual environment
-          command: python3 -m venv venv
-      - run:
-          name: Install python requirements
+          name: Install Python requirements of main app
           command: |
+            python3 -m venv venv
             . venv/bin/activate
-            pip install --requirement dev_requirements.txt
+            pip install --upgrade pip
+            pip install \
+              --requirement requirements.txt \
+              --requirement requirements_dev.txt
       - run:
           name: Install node dependencies
           command: npm install
