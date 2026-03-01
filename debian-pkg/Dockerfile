@@ -2,7 +2,7 @@
 # Enable here-documents:
 # https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/syntax.md#here-documents
 
-FROM debian:bookworm-20250630-slim AS build
+FROM debian:trixie-20260223-slim AS build
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN set -exu && \
@@ -107,7 +107,7 @@ RUN mk-build-deps \
 
 RUN set -exu && \
     cat >changelog <<EOF
-tinypilot (${PKG_VERSION}) bookworm; urgency=medium
+tinypilot (${PKG_VERSION}) trixie; urgency=medium
 
   * Latest TinyPilot release.
 

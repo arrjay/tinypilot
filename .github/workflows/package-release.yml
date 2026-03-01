@@ -34,5 +34,5 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ./output/packages.zip
-          asset_name: ${{ github.event.repository.name }}-debian-bookworm.zip
+          asset_name: ${{ github.event.repository.name }}-debian-trixie.zip
           tag: ${{ github.ref }}
