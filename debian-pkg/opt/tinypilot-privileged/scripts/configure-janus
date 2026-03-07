@@ -36,4 +36,4 @@ done
 runuser tinypilot \
   --command 'PYTHONPATH=/usr/lib/tinypilot/app /usr/lib/tinypilot/venv/bin/python /usr/lib/tinypilot/scripts/render-template' \
   < /usr/share/tinypilot/templates/janus.jcfg.j2 \
-  > /etc/janus/janus.jcfg
+  > /usr/lib/tinypilot/runtime-config/janus/janus.jcfg
