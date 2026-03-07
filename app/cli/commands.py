@@ -59,6 +59,27 @@ def set_kvm_gpio_script(_args):
     except Exception as e:
         raise e
 
+@command('show-kvm-external-script')
+def show_external_kvm_script(_args):
+    """Prints if a KVM External Script is configured."""
+    kvm_external_script = db.settings.Settings().get_external_kvm_script()
+    if not kvm_external_script:
+        print("There is no KVM External Script configured.")
+    else:
+        print(kvm_external_script)
+
+@command('set-kvm-external-script')
+def set_external_kvm_script(_args):
+    """Configures a KVM External Script for Tinypilot"""
+    try:
+        if len(_args) < 2:
+            script = ''
+        else:
+            script = _args[1]
+        db.settings.Settings().set_external_kvm_script(script)
+    except Exception as e:
+        raise e
+
 @command('show-kvm-aten-ports')
 def show_kvm_aten_ports(_args):
     """Prints how many ATEN KVM ports are configured"""

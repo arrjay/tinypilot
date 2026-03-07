@@ -76,3 +76,21 @@ class SettingsTest(unittest.TestCase):
             settings.set_gpio_kvm_script('/usr/local/bin/kvm-poke')
             self.assertEqual('/usr/local/bin/kvm-poke',
                              settings.get_gpio_kvm_script())
+
+    @mock.patch.object(db.settings, 'db_connection')
+    def test_kvm_external_script_default(self, mock_db_connection):
+        with tempfile.NamedTemporaryFile() as temp_file:
+            mock_db_connection.get.return_value = db.store.create_or_open(
+                temp_file.name)
+            settings = db.settings.Settings()
+            self.assertEqual(False, settings.get_external_kvm_script())
+
+    @mock.patch.object(db.settings, 'db_connection')
+    def test_can_change_kvm_external_script(self, mock_db_connection):
+        with tempfile.NamedTemporaryFile() as temp_file:
+            mock_db_connection.get.return_value = db.store.create_or_open(
+                temp_file.name)
+            settings = db.settings.Settings()
+            settings.set_external_kvm_script('/usr/local/bin/kvm-poke')
+            self.assertEqual('/usr/local/bin/kvm-poke',
+                             settings.get_external_kvm_script())
