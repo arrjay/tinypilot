@@ -22,7 +22,9 @@ import request_parsers.password
 import request_parsers.paste
 import request_parsers.requires_https
 import request_parsers.video_settings
+import request_parsers.generic_kvm_req
 import session
+import subprocess
 import update.launcher
 import update.settings
 import update.status
@@ -858,3 +860,39 @@ def paste_post():
                               args=(keyboard_path, keystrokes))
 
     return json_response.success()
+
+@api_blueprint.route('/kvm-external-request', methods=['POST'])
+@required_auth(auth.Role.OPERATOR)
+def invoke_kvm_script():
+    """Runs an external script to control a KVM
+
+    Expects a JSON data structure in the request body that contains the
+    following parameters:
+    - id: string - arbitrary string port ID.
+
+    Example of request body:
+    {
+        "id": "f"
+    }
+    """
+    try:
+        id = request_parsers.sview_port_req.parse(flask.request)
+    except request_parsers.errors.Error as e:
+        return json_response.error(e), 400
+
+    try:
+        script = db.settings.Settings().get_external_kvm_script()
+        if script:
+            cmd_output = subprocess.check_output([
+                '/usr/bin/sudo',
+                script,
+                id,
+            ],
+                                                 stderr=subprocess.STDOUT,
+                                                 universal_newlines=True)
+        else:
+            raise Error(f'CONFIG ERROR: Missing external kvm script path')
+    except subprocess.CalledProcessError as e:
+        raise network.NetworkError(str(e.output).strip()) from e
+    except Error as e:
+        raise network.NetworkError(e)
