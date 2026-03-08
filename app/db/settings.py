@@ -77,6 +77,20 @@ class Settings:
             return True
         return False
 
+    def get_kvm_any_enabled(self):
+        """Determine if any External KVM Configurations are enabled
+
+        If any kvms in the external_kvm table have a ports count
+            greater than zero, return True, otherwise False
+        """
+        cusror = self._db_connection.execute(
+            'SELECT SUM(ports) FROM external_kvm')
+        raw_value = _fetch_single_value(cursor, 0)
+        if raw_value > 0:
+            return True
+        else:
+            return False
+
     def get_gpio_kvm_script(self):
         """Retrieves path to a simple gpio-controlling (flip) script for a KVM
 
