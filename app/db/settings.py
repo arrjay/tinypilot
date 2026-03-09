@@ -62,19 +62,68 @@ class Settings:
             'UPDATE settings SET streaming_mode=? WHERE id=?',
             [streaming_mode.value, _ROW_ID])
 
-    def get_kvm_any_enabled(self):
-        """Determine if any External KVM Configurations are enabled
+    def get_kvm_unitdata(self, kvmid):
+        """Return External KVM Data:
 
-        If any kvms in the external_kvm table have a ports count
-            greater than zero, return True, otherwise False
+        This is a Python object detailing the KVM configuration for a specific
+            unit. It must contain a row id, and a portscript or commandscript.
         """
-        cusror = self._db_connection.execute(
-            'SELECT SUM(ports) FROM external_kvm')
-        raw_value = _fetch_single_value(cursor, 0)
-        if raw_value > 0:
-            return True
-        else:
+        cursor = self._db_connection.execute(
+            'SELECT id, portscript, commandscript, ports FROM external_kvm WHERE ports > 0 AND codename=?', [kvmid]
+        )
+        row = cursor.fetchone()
+        if not row:
+            raise
+
+        (intid,portscript,commandscript, ports) = row
+
+        if not portscript and not commandscript:
+            raise
+
+        return { 'intid': intid, 'portscript': portscript, 'commandscript': commandscript, 'ports': ports }
+
+    def check_kvm_action(self, kvm_intid, action):
+        """Return if KVM action is configured
+        """
+        cursor = self._db_connection.execute(
+          'SELECT id FROM external_kvm_commands WHERE kvm_id=? AND action=?', [kvm_intid, action]
+        )
+        query = cursor.fetchone()
+        if query is None:
             return False
+        else:
+            return True
+
+    def get_kvm_definitions(self):
+        """Return External KVM configuration object.
+
+        This is a Python object describing the KVM configuration for use in
+            TinyPilot custom elements. It can be empty.
+        """
+        res = {}
+        kvm_check = self._db_connection.execute(
+            'SELECT SUM(ports) FROM external_kvm')
+        kvm_value = _fetch_single_value(kvm_check, 0)
+
+        if kvm_value > 0:
+            cursor = self._db_connection.execute(
+                'SELECT codename, label, id, ports FROM external_kvm WHERE ports > 0 ORDER BY label')
+            for row in cursor:
+                codename = row[0]
+                label = row[1]
+                kvm_id = row[2]
+                ports = row[3]
+                res[codename] = {'label': label, 'ports': ports}
+                c2 = self._db_connection.execute(
+                    'SELECT action, label FROM external_kvm_commands WHERE kvm_id=? ORDER BY label', [kvm_id])
+                actions = c2.fetchall()
+                verbs = [{x[0]: x[1]} for x in actions]
+                if len(actions) > 0:
+                    verbs = {}
+                    for x in actions:
+                        verbs[x[0]] = x[1]
+                    res[codename]['verbs'] = verbs
+        return res
 
     def get_external_kvm_script(self):
         """Retrieves path to an external script for a KVM control

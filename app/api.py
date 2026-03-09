@@ -861,37 +861,34 @@ def paste_post():
 
     return json_response.success()
 
-@api_blueprint.route('/kvm-external-request', methods=['POST'])
+@api_blueprint.route('/kvm-hardware-command', methods=['POST'])
 @required_auth(auth.Role.OPERATOR)
 def invoke_kvm_script():
     """Runs an external script to control a KVM
 
     Expects a JSON data structure in the request body that contains the
     following parameters:
-    - id: string - arbitrary string port ID.
+    - kvmtype: string - arbitrary string port ID. will need to be defined in db.
+#    - id: string - arbitrary string port ID.
 
     Example of request body:
     {
-        "id": "f"
+        "kvmtype": "f"
     }
     """
     try:
-        id = request_parsers.sview_port_req.parse(flask.request)
+        ops = request_parsers.generic_kvm_req.parse(flask.request)
     except request_parsers.errors.Error as e:
         return json_response.error(e), 400
 
     try:
-        script = db.settings.Settings().get_external_kvm_script()
-        if script:
-            cmd_output = subprocess.check_output([
-                '/usr/bin/sudo',
-                script,
-                id,
-            ],
-                                                 stderr=subprocess.STDOUT,
-                                                 universal_newlines=True)
-        else:
-            raise Error(f'CONFIG ERROR: Missing external kvm script path')
+        cmd_list = ['/usr/bin/sudo', ops['script']]
+        if ops['args']:
+            for arg in ops['args']:
+                cmd_list.append(arg)
+        cmd_output = subprocess.check_output(cmd_list,
+                                             stderr=subprocess.STDOUT,
+                                             universal_newlines=True)
     except subprocess.CalledProcessError as e:
         raise network.NetworkError(str(e.output).strip()) from e
     except Error as e:

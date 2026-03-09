@@ -47,6 +47,7 @@ app.config.update(
     PERMANENT_SESSION_LIFETIME=datetime.timedelta(days=90),
     TEMPLATES_AUTO_RELOAD=True,
     WTF_CSRF_TIME_LIMIT=None,
+    KVM_CONFIGURATION=db.settings.Settings().get_kvm_definitions(),
 )
 
 # Configure cookie security.

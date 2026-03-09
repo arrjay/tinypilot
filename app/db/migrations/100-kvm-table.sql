@@ -33,7 +33,7 @@ VALUES (NULL, 'aten_cs', 'ATEN', 0, '/usr/lib/tinypilot/scripts/aten-control');
 
 INSERT OR IGNORE INTO external_kvm_commands(id, kvm_id, action, label)
 VALUES
-  (NULL, (SELECT id FROM external_kvm WHERE codename = 'aten_cs'), 'reset' 'Reset KVM'),
-  (NULL, (SELECT id FROM external_kvm WHERE codename = 'aten_cs'), 'sync-edid' 'Sync Monitor EDID'),
-  (NULL, (SELECT id FROM external_kvm WHERE codename = 'aten_cs'), 'toggle-mouseemu' 'Toggle Mouse Emulation'),
-  (NULL, (SELECT id FROM external_kvm WHERE codename = 'aten_cs'), 'report' 'Report KVM Configuration');
+  (NULL, (SELECT id FROM external_kvm WHERE codename = 'aten_cs'), 'reset', 'Reset KVM'),
+  (NULL, (SELECT id FROM external_kvm WHERE codename = 'aten_cs'), 'sync-edid', 'Sync Monitor EDID'),
+  (NULL, (SELECT id FROM external_kvm WHERE codename = 'aten_cs'), 'toggle-mouseemu', 'Toggle Mouse Emulation'),
+  (NULL, (SELECT id FROM external_kvm WHERE codename = 'aten_cs'), 'report', 'Report KVM Configuration');

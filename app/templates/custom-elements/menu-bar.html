@@ -323,6 +323,48 @@
             >Wake on LAN</a
           >
         </li>
+        {% if config.KVM_CONFIGURATION %}
+        <li class="item subgroup" role="presentation">
+          <a role="menutem">KVM Actions</a>
+          <ul class="items" role=group">
+            <!-- We are going to loop twice over the configs
+                 so that all the verbs sit in the top of the menu -->
+            {% for entity in config.KVM_CONFIGURATION %}
+            {% if config.KVM_CONFIGURATION[entity].verbs %}
+            <li class="item subgroup" role="presentation">
+              <a role="menuitem">{{config.KVM_CONFIGURATION[entity].label}} Unit Config</a>
+              <ul class="items" role="group">
+                {% for verb in config.KVM_CONFIGURATION[entity].verbs %}
+                <li class="item" role="presentation">
+                  <a role="menuitem" kvmtype="{{entity}}" action="{{verb}}" class="kvm-command"
+                    >[{{config.KVM_CONFIGURATION[entity].label}}] {{config.KVM_CONFIGURATION[entity].verbs[verb]}}</a
+                  >
+                </li>
+                {% endfor %}
+              </ul>
+            </li>
+            {% endif %}
+            {% endfor %}
+            {% for entity in config.KVM_CONFIGURATION %}
+            {% if config.KVM_CONFIGURATION[entity].ports > 1 %}
+            {% for _ in range(1, config.KVM_CONFIGURATION[entity].ports + 1) %}
+            <li class="item" role="presentation">
+              <a role="menuitem" kvmtype="{{entity}}" action="portselect" port="{{_}}" class="kvm-command"
+                >[{{config.KVM_CONFIGURATION[entity].label}}] Select Port {{_}}</a
+              >
+            </li>
+            {% endfor %}
+            {% elif config.KVM_CONFIGURATION[entity].ports > 0 %}
+            <li class="item" role="presentation">
+              <a role="menuitem" kvmtype="{{entity}}" action="portselect" port="0" class="kvm-command"
+                >[{{config.KVM_CONFIGURATION[entity].label}}] Toggle Input</a
+              >
+            </li>
+            {% endif %}
+            {% endfor %}
+          </ul>
+        </li>
+        {% endif %}
         <li class="item pro-badge" role="presentation">
           <a
             data-onclick-event="serial-terminal-dialog-requested"
@@ -507,6 +549,15 @@
             listItem.setAttribute("role", "presentation");
             cursorList.appendChild(listItem);
           }
+
+          // Add glue for KVM events
+          this.shadowRoot.querySelectorAll('.kvm-command').forEach((e) => {
+            e.addEventListener("click", (evt) => {
+              this.emitCustomEvent("kvm-command-request", { kvmtype: e.getAttribute("kvmtype"), action: e.getAttribute("action"), port: e.getAttribute("port") });
+              evt.preventDefault();
+            });
+          });
+
         }
 
         disconnectedCallback() {

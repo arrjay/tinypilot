@@ -569,3 +569,17 @@ export async function pasteText(text, language) {
     body: JSON.stringify({ text, language }),
   }).then(processJsonResponse);
 }
+
+export async function kvmUnitCommand(command) {
+  return fetch(baseAppPath + "api/kvm-hardware-command", {
+    method: "POST",
+    mode: "same-origin",
+    cache: "no-cache",
+    redirect: "error",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCsrfToken(),
+    },
+    body: JSON.stringify(command),
+  }).then(processJsonResponse);
+}
