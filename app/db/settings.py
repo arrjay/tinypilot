@@ -62,31 +62,89 @@ class Settings:
             'UPDATE settings SET streaming_mode=? WHERE id=?',
             [streaming_mode.value, _ROW_ID])
 
-    def get_kvm_unitdata(self, kvmid):
+    def list_defined_kvms(self):
+        """List KVM units defined in tinypilot database.
+        """
+        cursor = self._db_connection.execute(
+            'SELECT codename FROM external_kvm'
+        )
+        return [x[0] for x in cursor.fetchall()]
+
+    def get_kvm_actions(self, kvmint):
+        """Return Actions and Labels for a KVM if it has any
+        """
+        cursor = self._db_connection.execute(
+            'SELECT action, label FROM external_kvm_commands WHERE kvm_id=? ORDER BY label', [kvmint])
+        verbs = [{x[0]: x[1]} for x in cursor.fetchall()]
+        if len(verbs) == 0:
+            return None
+        return verbs
+
+    def get_kvm_unitdata(self, kvmid, portct):
         """Return External KVM Data:
 
         This is a Python object detailing the KVM configuration for a specific
             unit. It must contain a row id, and a portscript or commandscript.
         """
         cursor = self._db_connection.execute(
-            'SELECT id, portscript, commandscript, ports FROM external_kvm WHERE ports > 0 AND codename=?', [kvmid]
+            'SELECT id, portscript, commandscript, ports FROM external_kvm WHERE ports>=? AND codename=?', [int(portct), kvmid]
         )
         row = cursor.fetchone()
         if not row:
-            raise
+            return None
 
         (intid,portscript,commandscript, ports) = row
 
-        if not portscript and not commandscript:
+        return { 'intid': intid, 'portscript': portscript, 'commandscript': commandscript, 'ports': ports }
+
+    def create_kvm(self, kvmname, kvmlabel):
+        """Create a KVM with the given code name and label"""
+        # check if it exists first
+        defined = self.get_kvm_unitdata(kvmname, 0)
+        if defined:
+            print(f"{kvmname} exists")
+            raise
+        cursor = self._db_connection.execute(
+            'INSERT INTO external_kvm(id, codename, label, ports) VALUES (NULL, ?, ?, 0)', [kvmname, kvmlabel]
+        )
+
+    def set_kvm_portscript(self, kvmname, scriptpath):
+        """Set up the portscript for an External KVM"""
+        defined = self.get_kvm_unitdata(kvmname, 0)
+        if not defined:
             raise
 
-        return { 'intid': intid, 'portscript': portscript, 'commandscript': commandscript, 'ports': ports }
+        cursor = self._db_connection.execute(
+            'UPDATE external_kvm SET portscript=? WHERE id=?', [defined['intid'], scriptpath]
+        )
+
+    def set_kvm_commandscript(self, kvmname, scriptpath):
+        """Set up the commandscript for an External KVM"""
+        defined = self.get_kvm_unitdata(kvmname, 0)
+        if not defined:
+            raise
+
+        cursor = self._db_connection.execute(
+            'UPDATE external_kvm SET commandscript=? WHERE id=?', [defined['intid'], scriptpath]
+        )
+
+    def delete_kvm(self, kvmname):
+        """Delete a KVM by codename, if found"""
+        # check if it exists first
+        defined = self.get_kvm_unitdata(kvmname, 0)
+        if defined:
+            action_delete = self._db_connection.execute(
+                'DELETE FROM external_kvm_commands WHERE kvm_id=?', [defined['intid']]
+            )
+            kvm_delete = self._db_connection.execute(
+                'DELETE FROM external_kvm WHERE id=?', [defined['intid']]
+            )
 
     def check_kvm_action(self, kvm_intid, action):
         """Return if KVM action is configured
         """
         cursor = self._db_connection.execute(
-          'SELECT id FROM external_kvm_commands WHERE kvm_id=? AND action=?', [kvm_intid, action]
+            'SELECT id FROM external_kvm_commands WHERE kvm_id=? AND action=?', [kvm_intid, action]
         )
         query = cursor.fetchone()
         if query is None:
@@ -94,7 +152,35 @@ class Settings:
         else:
             return True
 
-    def get_kvm_definitions(self):
+    def add_kvm_action(self, kvmname, action, label):
+        """Set up a KVM action verb/label pair
+        """
+        defined = self.get_kvm_unitdata(kvmname, 0)
+        if not defined:
+            raise
+
+        cursor = self._db_connection.execute(
+            'INSERT INTO external_kvm_commands (id, kvm_id, action, label) VALUES (NULL, ?, ?, ?)', [defined['intid'], action, label]
+        )
+
+    def del_kvm_action(self, kvmname, action):
+        """Remove a KVM action
+        """
+        defined = self.get_kvm_unitdata(kvmname, 0)
+        if not defined:
+            raise
+
+        cursor = self._db_connection.execute(
+            'DELETE FROM external_kvm_commands WHERE kvm_id=? AND action=?', [defined['intid'], action]
+        )
+
+    def set_kvm_ports(self, kvmname, portct):
+        """Set KVM port count"""
+        self._db_connection.execute(
+            'UPDATE external_kvm SET ports=? WHERE codename=?', [portct, kvmname]
+        )
+
+    def get_kvm_activeconfig(self):
         """Return External KVM configuration object.
 
         This is a Python object describing the KVM configuration for use in
@@ -114,42 +200,10 @@ class Settings:
                 kvm_id = row[2]
                 ports = row[3]
                 res[codename] = {'label': label, 'ports': ports}
-                c2 = self._db_connection.execute(
-                    'SELECT action, label FROM external_kvm_commands WHERE kvm_id=? ORDER BY label', [kvm_id])
-                actions = c2.fetchall()
-                verbs = [{x[0]: x[1]} for x in actions]
-                if len(actions) > 0:
-                    verbs = {}
-                    for x in actions:
-                        verbs[x[0]] = x[1]
+                verbs = self.get_kvm_actions(kvm_id)
+                if verbs:
                     res[codename]['verbs'] = verbs
         return res
-
-    def get_external_kvm_script(self):
-        """Retrieves path to an external script for a KVM control
-
-        If there is no setting in the database, it returns False
-
-        Returns:
-            string or False.
-        """
-        cursor = self._db_connection.execute(
-            'SELECT generic_kvm_script FROM settings WHERE id=?', [_ROW_ID])
-        raw_value = _fetch_single_value(cursor, "")
-        if raw_value == "":
-            return False
-        else:
-            return raw_value
-
-    def set_external_kvm_script(self, script_path):
-        """Store a path to an external kvm control script.
-
-        Args:
-            script_path: string. filesystem path to script.
-        """
-        self._db_connection.execute(
-            'UPDATE settings SET generic_kvm_script=? WHERE id=?',
-            [script_path, _ROW_ID])
 
 def _fetch_single_value(connection_cursor, default_value):
     """Helper method to resolve a query for one single value."""
