@@ -28,8 +28,8 @@ INSERT OR IGNORE INTO external_kvm(id, codename, label, ports, portscript)
 VALUES (NULL, 'linksys_sview', 'SVIEW', 0, '/usr/lib/tinypilot/scripts/sview-port');
 
 -- notice we supplied a command script
-INSERT OR IGNORE INTO external_kvm(id, codename, label, ports, commandscript)
-VALUES (NULL, 'aten_cs', 'ATEN', 0, '/usr/lib/tinypilot/scripts/aten-control');
+INSERT OR IGNORE INTO external_kvm(id, codename, label, ports, portscript, commandscript)
+VALUES (NULL, 'aten_cs', 'ATEN', 0, '/usr/lib/tinypilot/scripts/aten-port', '/usr/lib/tinypilot/scripts/aten-control');
 
 INSERT OR IGNORE INTO external_kvm_commands(id, kvm_id, action, label)
 VALUES
