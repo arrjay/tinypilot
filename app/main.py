@@ -52,7 +52,7 @@ app.config.update(
     TEMPLATES_AUTO_RELOAD=True,
     WTF_CSRF_TIME_LIMIT=None,
     OFFICIAL_APP=False,
-    KVM_CONFIGURATION=db.settings.Settings().get_kvm_definitions(),
+    KVM_CONFIGURATION=db.settings.Settings().get_kvm_activeconfig(),
 )
 
 # Configure cookie security.

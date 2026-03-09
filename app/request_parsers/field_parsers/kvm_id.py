@@ -16,10 +16,15 @@ def parse_kvm_id(id):
             'Kvm ID can only contain characters a-z, A-Z, 0-9, or .-_')
 
     kvm_str_id = id.lower()
-    kvm_int_data = db.settings.Settings().get_kvm_unitdata(kvm_str_id)
+    # filter to KVM units with at least one port
+    kvm_int_data = db.settings.Settings().get_kvm_unitdata(kvm_str_id, 1)
 
+    # KVM needs to have a commandscript or a portscript to be considered
+    # something worth talking to
     if not kvm_int_data:
+        if not kvm_int_data['portscript'] and not kvm_int_data['commandscript']:
+            raise
         raise errors.InvalidKvmIdError(
-            'Kvm ID not found in database')
+            'Kvm ID not found or enabled in database')
 
     return [ kvm_str_id, kvm_int_data ]
