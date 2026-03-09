@@ -62,34 +62,68 @@ class Settings:
             'UPDATE settings SET streaming_mode=? WHERE id=?',
             [streaming_mode.value, _ROW_ID])
 
-    def get_kvm_menu_enabled(self):
-        """Retrieves a composite setting determing if the KVM Actions menu
-        should be drawn.
+    def get_kvm_unitdata(self, kvmid):
+        """Return External KVM Data:
 
-        Returns:
-            Boolean.
+        This is a Python object detailing the KVM configuration for a specific
+            unit. It must contain a row id, and a portscript or commandscript.
         """
-        if self.get_kvm_sview_portcount() > 0:
-            return True
-        if self.get_gpio_kvm_script():
-            return True
-        if self.get_kvm_aten_portcount() > 0:
-            return True
-        return False
+        cursor = self._db_connection.execute(
+            'SELECT id, portscript, commandscript, ports FROM external_kvm WHERE ports > 0 AND codename=?', [kvmid]
+        )
+        row = cursor.fetchone()
+        if not row:
+            raise
 
-    def get_kvm_any_enabled(self):
-        """Determine if any External KVM Configurations are enabled
+        (intid,portscript,commandscript, ports) = row
 
-        If any kvms in the external_kvm table have a ports count
-            greater than zero, return True, otherwise False
+        if not portscript and not commandscript:
+            raise
+
+        return { 'intid': intid, 'portscript': portscript, 'commandscript': commandscript, 'ports': ports }
+
+    def check_kvm_action(self, kvm_intid, action):
+        """Return if KVM action is configured
         """
-        cusror = self._db_connection.execute(
-            'SELECT SUM(ports) FROM external_kvm')
-        raw_value = _fetch_single_value(cursor, 0)
-        if raw_value > 0:
-            return True
-        else:
+        cursor = self._db_connection.execute(
+          'SELECT id FROM external_kvm_commands WHERE kvm_id=? AND action=?', [kvm_intid, action]
+        )
+        query = cursor.fetchone()
+        if query is None:
             return False
+        else:
+            return True
+
+    def get_kvm_definitions(self):
+        """Return External KVM configuration object.
+
+        This is a Python object describing the KVM configuration for use in
+            TinyPilot custom elements. It can be empty.
+        """
+        res = {}
+        kvm_check = self._db_connection.execute(
+            'SELECT SUM(ports) FROM external_kvm')
+        kvm_value = _fetch_single_value(kvm_check, 0)
+
+        if kvm_value > 0:
+            cursor = self._db_connection.execute(
+                'SELECT codename, label, id, ports FROM external_kvm WHERE ports > 0 ORDER BY label')
+            for row in cursor:
+                codename = row[0]
+                label = row[1]
+                kvm_id = row[2]
+                ports = row[3]
+                res[codename] = {'label': label, 'ports': ports}
+                c2 = self._db_connection.execute(
+                    'SELECT action, label FROM external_kvm_commands WHERE kvm_id=? ORDER BY label', [kvm_id])
+                actions = c2.fetchall()
+                verbs = [{x[0]: x[1]} for x in actions]
+                if len(actions) > 0:
+                    verbs = {}
+                    for x in actions:
+                        verbs[x[0]] = x[1]
+                    res[codename]['verbs'] = verbs
+        return res
 
     def get_gpio_kvm_script(self):
         """Retrieves path to a simple gpio-controlling (flip) script for a KVM
@@ -106,82 +140,6 @@ class Settings:
             return False
         else:
             return raw_value
-
-    def set_gpio_kvm_script(self, script_path):
-        """Store a path to a kvm-gpio script.
-
-        Args:
-            script_path: string. filesystem path to script.
-        """
-        self._db_connection.execute(
-            'UPDATE settings SET gpio_kvm_script=? WHERE id=?',
-            [script_path, _ROW_ID])
-
-    def get_external_kvm_script(self):
-        """Retrieves path to an external script for a KVM control
-
-        If there is no setting in the database, it returns False
-
-        Returns:
-            string or False.
-        """
-        cursor = self._db_connection.execute(
-            'SELECT generic_kvm_script FROM settings WHERE id=?', [_ROW_ID])
-        raw_value = _fetch_single_value(cursor, "")
-        if raw_value == "":
-            return False
-        else:
-            return raw_value
-
-    def set_external_kvm_script(self, script_path):
-        """Store a path to an external kvm control script.
-
-        Args:
-            script_path: string. filesystem path to script.
-        """
-        self._db_connection.execute(
-            'UPDATE settings SET generic_kvm_script=? WHERE id=?',
-            [script_path, _ROW_ID])
-
-    def get_kvm_aten_portcount(self):
-        """Retrieves the number of ports on an ATEN KVM (for port selection)
-
-        Returns:
-            Number.
-        """
-        cursor = self._db_connection.execute(
-            'SELECT aten_kvm_portnr FROM settings WHERE id=?', [_ROW_ID])
-        return _fetch_single_value(cursor, 0)
-
-    def set_kvm_aten_portcount(self, port_count):
-        """Configure the number of ports on an attached ATEN KVM.
-
-        Args:
-            port_count: number. count of ports in use (0 is no ports, no kvm)
-        """
-        self._db_connection.execute(
-            'UPDATE settings SET aten_kvm_portnr=? WHERE id=?',
-            [port_count, _ROW_ID])
-
-    def get_kvm_sview_portcount(self):
-        """Retrieves the number of ports on a Linksys SVIEW KVM (for port selection)
-
-        Returns:
-            Number.
-        """
-        cursor = self._db_connection.execute(
-            'SELECT sview_kvm_portnr FROM settings WHERE id=?', [_ROW_ID])
-        return _fetch_single_value(cursor, 0)
-
-    def set_kvm_sview_portcount(self, port_count):
-        """Configure the number of ports on an attached Linksys SVIEW KVM.
-
-        Args:
-            port_count: number. count of ports in use (0 is no ports, no kvm)
-        """
-        self._db_connection.execute(
-            'UPDATE settings SET sview_kvm_portnr=? WHERE id=?',
-            [port_count, _ROW_ID])
 
 def _fetch_single_value(connection_cursor, default_value):
     """Helper method to resolve a query for one single value."""

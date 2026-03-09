@@ -6,7 +6,7 @@ on:
       - '*'
 
 env:
-  VERSION_TAG: ${{ startsWith(github.event.ref, 'refs/tags/') && github.ref_name || format('0.{0}', github.run_number) }}  
+  VERSION_TAG: ${{ startsWith(github.event.ref, 'refs/tags/') && github.ref_name || format('0.{0}', github.run_number) }}
 
 jobs:
   build:

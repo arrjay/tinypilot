@@ -52,10 +52,7 @@ app.config.update(
     TEMPLATES_AUTO_RELOAD=True,
     WTF_CSRF_TIME_LIMIT=None,
     OFFICIAL_APP=False,
-    KVM_ACTIONS_ENABLED=db.settings.Settings().get_kvm_menu_enabled(),
-    KVM_ACTIONS_GPIO_TOGGLE=db.settings.Settings().get_gpio_kvm_script(),
-    KVM_ACTIONS_ATEN_PORTS=db.settings.Settings().get_kvm_aten_portcount(),
-    KVM_ACTIONS_SVIEW_PORTS=db.settings.Settings().get_kvm_sview_portcount(),
+    KVM_CONFIGURATION=db.settings.Settings().get_kvm_definitions(),
 )
 
 # Configure cookie security.

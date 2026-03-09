@@ -588,21 +588,8 @@ export async function pasteText(text, language) {
   }).then(processJsonResponse);
 }
 
-export async function toggleGpioKvm() {
-  return fetch(baseAppPath + "api/kvm-toggle-gpio", {
-    method: "POST",
-    mode: "same-origin",
-    cache: "no-cache",
-    redirect: "error",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": getCsrfToken(),
-    }
-  }).then(processJsonResponse);
-}
-
-export async function kvmAtenCommand(command) {
-  return fetch(baseAppPath + "api/aten-control-sequence", {
+export async function kvmUnitCommand(command) {
+  return fetch(baseAppPath + "api/kvm-hardware-command", {
     method: "POST",
     mode: "same-origin",
     cache: "no-cache",
@@ -611,20 +598,6 @@ export async function kvmAtenCommand(command) {
       "Content-Type": "application/json",
       "X-CSRFToken": getCsrfToken(),
     },
-    body: JSON.stringify({ command }),
-  }).then(processJsonResponse);
-}
-
-export async function kvmSviewSelectPort(port) {
-  return fetch(baseAppPath + "api/sview-port-select", {
-    method: "POST",
-    mode: "same-origin",
-    cache: "no-cache",
-    redirect: "error",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRFToken": getCsrfToken(),
-    },
-    body: JSON.stringify({ id: parseInt(port) }),
+    body: JSON.stringify(command),
   }).then(processJsonResponse);
 }

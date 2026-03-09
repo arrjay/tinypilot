@@ -324,60 +324,45 @@
             >Wake on LAN</a
           >
         </li>
-        {% if config.KVM_ACTIONS_ENABLED %}
+        {% if config.KVM_CONFIGURATION %}
         <li class="item subgroup" role="presentation">
           <a role="menutem">KVM Actions</a>
           <ul class="items" role=group">
-            {% if config.KVM_ACTIONS_GPIO_TOGGLE %}
-            <li class="item" role="presentation">
-              <a data-onclick-event="kvm-relay-toggle-requested" role="menuitem"
-                >Toggle Input</a
-              >
-            </li>
-            {% endif %}
-            {% if config.KVM_ACTIONS_ATEN_PORTS != 0 %}
+            <!-- We are going to loop twice over the configs
+                 so that all the verbs sit in the top of the menu -->
+            {% for entity in config.KVM_CONFIGURATION %}
+            {% if config.KVM_CONFIGURATION[entity].verbs %}
             <li class="item subgroup" role="presentation">
-              <a role="menuitem">ATEN Unit Config</a>
+              <a role="menuitem">{{config.KVM_CONFIGURATION[entity].label}} Unit Config</a>
               <ul class="items" role="group">
+                {% for verb in config.KVM_CONFIGURATION[entity].verbs %}
                 <li class="item" role="presentation">
-                  <a data-onclick-event="kvm-aten-reset" role="menuitem"
-                    >[ATEN] Reset KVM</a
+                  <a role="menuitem" kvmtype="{{entity}}" action="{{verb}}" class="kvm-command"
+                    >[{{config.KVM_CONFIGURATION[entity].label}}] {{config.KVM_CONFIGURATION[entity].verbs[verb]}}</a
                   >
                 </li>
-                <li class="item" role="presentation">
-                  <a data-onclick-event="kvm-aten-sync-edid" role="menuitem"
-                    >[ATEN] Sync Video EDID</a
-                  >
-                </li>
-                <li class="item" role="presentation">
-                  <a data-onclick-event="kvm-aten-toggle-mouse-emulation" role="menuitem"
-                    >[ATEN] Toggle Mouse Emulation</a
-                  >
-                </li>
-                <li class="item" role="presentation">
-                  <a data-onclick-event="kvm-aten-report" role="menuitem"
-                    >[ATEN] Report KVM Status</a
-                  >
-                </li>
+                {% endfor %}
               </ul>
             </li>
-            {% for _ in range(1, config.KVM_ACTIONS_ATEN_PORTS + 1) %}
+            {% endif %}
+            {% endfor %}
+            {% for entity in config.KVM_CONFIGURATION %}
+            {% if config.KVM_CONFIGURATION[entity].ports > 1 %}
+            {% for _ in range(1, config.KVM_CONFIGURATION[entity].ports + 1) %}
             <li class="item" role="presentation">
-              <a role="menuitem" aten-port="{{_}}" class="aten-port-select"
-                >[ATEN] Select Port {{_}}</a
+              <a role="menuitem" kvmtype="{{entity}}" action="portselect" port="{{_}}" class="kvm-command"
+                >[{{config.KVM_CONFIGURATION[entity].label}}] Select Port {{_}}</a
               >
             </li>
             {% endfor %}
-            {% endif %}
-            {% if config.KVM_ACTIONS_SVIEW_PORTS != 0 %}
-            {% for _ in range(1, config.KVM_ACTIONS_SVIEW_PORTS + 1) %}
+            {% elif config.KVM_CONFIGURATION[entity].ports > 0 %}
             <li class="item" role="presentation">
-              <a role="menuitem" sview-port="{{_}}" class="sview-port-select"
-                >[SVIEW] Select Port {{_}}</a
+              <a role="menuitem" kvmtype="{{entity}}" action="portselect" port="0" class="kvm-command"
+                >[{{config.KVM_CONFIGURATION[entity].label}}] Toggle Input</a
               >
             </li>
-            {% endfor %}
             {% endif %}
+            {% endfor %}
           </ul>
         </li>
         {% endif %}
@@ -569,18 +554,10 @@
             cursorList.appendChild(listItem);
           }
 
-          // Add glue for ATEN KVM events
-          this.shadowRoot.querySelectorAll('.aten-port-select').forEach((e) => {
+          // Add glue for KVM events
+          this.shadowRoot.querySelectorAll('.kvm-command').forEach((e) => {
             e.addEventListener("click", (evt) => {
-              this.emitCustomEvent("aten-port-requested", { port: e.getAttribute("aten-port") });
-              evt.preventDefault();
-            });
-          });
-
-          // Add glue for SVIEW KVM events
-          this.shadowRoot.querySelectorAll('.sview-port-select').forEach((e) => {
-            e.addEventListener("click", (evt) => {
-              this.emitCustomEvent("sview-port-requested", { port: e.getAttribute("sview-port") });
+              this.emitCustomEvent("kvm-command-request", { kvmtype: e.getAttribute("kvmtype"), action: e.getAttribute("action"), port: e.getAttribute("port") });
               evt.preventDefault();
             });
           });

@@ -22,8 +22,6 @@ import request_parsers.password
 import request_parsers.paste
 import request_parsers.requires_https
 import request_parsers.video_settings
-import request_parsers.aten_control
-import request_parsers.sview_port_req
 import request_parsers.generic_kvm_req
 import session
 import subprocess
@@ -885,126 +883,34 @@ def paste_post():
 
     return json_response.success()
 
-@api_blueprint.route('/kvm-toggle-gpio', methods=['POST'])
-@required_auth(auth.Role.OPERATOR)
-def toggle_kvm_gpio():
-    """Runs an external script to toggle GPIO lines controlling a KVM
-
-    Expects no further input.
-    """
-    try:
-        script = db.settings.Settings().get_gpio_kvm_script()
-        if script:
-            cmd_output = subprocess.check_output([
-                '/usr/bin/sudo',
-                script,
-            ],
-                                                 stderr=subprocess.STDOUT,
-                                                 universal_newlines=True)
-        else:
-            raise Error(f'CONFIG ERROR: Missing gpio kvm script path')
-    except subprocess.CalledProcessError as e:
-        raise network.NetworkError(str(e.output).strip()) from e
-    except Error as e:
-        raise network.NetworkError(e)
-
-@api_blueprint.route('/kvm-external-request', methods=['POST'])
+@api_blueprint.route('/kvm-hardware-command', methods=['POST'])
 @required_auth(auth.Role.OPERATOR)
 def invoke_kvm_script():
     """Runs an external script to control a KVM
 
     Expects a JSON data structure in the request body that contains the
     following parameters:
-    - id: string - arbitrary string port ID.
+    - kvmtype: string - arbitrary string port ID. will need to be defined in db.
+#    - id: string - arbitrary string port ID.
 
     Example of request body:
     {
-        "id": "f"
+        "kvmtype": "f"
     }
     """
     try:
-        id = request_parsers.sview_port_req.parse(flask.request)
+        ops = request_parsers.generic_kvm_req.parse(flask.request)
     except request_parsers.errors.Error as e:
         return json_response.error(e), 400
 
     try:
-        script = db.settings.Settings().get_external_kvm_script()
-        if script:
-            cmd_output = subprocess.check_output([
-                '/usr/bin/sudo',
-                script,
-                id,
-            ],
-                                                 stderr=subprocess.STDOUT,
-                                                 universal_newlines=True)
-        else:
-            raise Error(f'CONFIG ERROR: Missing external kvm script path')
-    except subprocess.CalledProcessError as e:
-        raise network.NetworkError(str(e.output).strip()) from e
-    except Error as e:
-        raise network.NetworkError(e)
-
-@api_blueprint.route('/aten-control-sequence', methods=['POST'])
-@required_auth(auth.Role.OPERATOR)
-def aten_control_seq():
-    """Runs the ATEN KVM control script with the action verb
-
-    Expects a JSON data structure in the request body that contains the
-    following parameters:
-    - command: string - (reset|switch-hsm-alt|report|sync-edid|toggle-mouse-emulation)
-
-    Example of request body:
-    {
-        "command": "reset"
-    }
-    """
-    try:
-        verb = request_parsers.aten_control.parse(flask.request)
-    except request_parsers.errors.Error as e:
-        return json_response.error(e), 400
-
-    try:
-        cmd_output = subprocess.check_output([
-            '/usr/lib/tinypilot/scripts/aten-control',
-            verb,
-        ],
+        cmd_list = ['/usr/bin/sudo', ops['script']]
+        if ops['args']:
+            for arg in ops['args']:
+                cmd_list.append(arg)
+        cmd_output = subprocess.check_output(cmd_list,
                                              stderr=subprocess.STDOUT,
                                              universal_newlines=True)
-        return json_response.success()
-
-    except subprocess.CalledProcessError as e:
-        raise network.NetworkError(str(e.output).strip()) from e
-    except Error as e:
-        raise network.NetworkError(e)
-
-@api_blueprint.route('/sview-port-select', methods=['POST'])
-@required_auth(auth.Role.OPERATOR)
-def sview_port_select():
-    """Selects a port by ID on a Linksys SVIEW KVM switch.
-
-    Expects a JSON data structure in the request body that contains the
-    following parameters:
-    - id: string - Octal-like (digits 1-8) port ID.
-
-    Example of request body:
-    {
-        "id": 6
-    }
-    """
-    try:
-        id = request_parsers.sview_port_req.parse(flask.request)
-    except request_parsers.errors.Error as e:
-        return json_response.error(e), 400
-
-    try:
-        cmd_output = subprocess.check_output([
-            '/usr/lib/tinypilot/scripts/sview-control',
-            str(id),
-        ],
-                                             stderr=subprocess.STDOUT,
-                                             universal_newlines=True)
-        return json_response.success()
-
     except subprocess.CalledProcessError as e:
         raise network.NetworkError(str(e.output).strip()) from e
     except Error as e:

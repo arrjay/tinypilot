@@ -115,3 +115,11 @@ def set_kvm_sview_ports(_args):
         db.settings.Settings().set_kvm_sview_portcount(ports)
     except Exception as e:
         raise e
+
+@command('show-kvm-configuration')
+def get_kvm_config(_args):
+    """Shows the current External KVM configuration object"""
+    try:
+        print(db.settings.Settings().get_kvm_definitions())
+    except Exception as e:
+        raise e

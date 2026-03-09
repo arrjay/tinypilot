@@ -3,7 +3,7 @@ import { KeyboardState } from "./keyboardstate.js";
 import { sendKeystroke } from "./keystrokes.js";
 import * as settings from "./settings.js";
 import { OverlayTracker } from "./overlays.js";
-import { logout, toggleGpioKvm, kvmAtenCommand, kvmSviewSelectPort } from "./controllers.js";
+import { logout, kvmUnitCommand } from "./controllers.js";
 
 // Suppress ESLint warnings about undefined variables.
 // `io` is defined by the Socket.IO library, which is globally available on the
@@ -473,48 +473,8 @@ menuBar.addEventListener("logout-requested", () => {
     });
 });
 
-menuBar.addEventListener("kvm-relay-toggle-requested", () => {
-  toggleGpioKvm();
-});
-
-menuBar.addEventListener("kvm-aten-reset", () => {
-  kvmAtenCommand('reset');
-});
-menuBar.addEventListener("kvm-aten-sync-edid", () => {
-  kvmAtenCommand('sync-edid');
-});
-menuBar.addEventListener("kvm-aten-toggle-mouse-emulation", () => {
-  kvmAtenCommand('toggle-mouse-emulation');
-});
-menuBar.addEventListener("kvm-aten-report", () => {
-  kvmAtenCommand('report');
-});
-// send keystroke commands to cycle to a specific port on an ATEN KVM.
-// mostly because not everyone *has* Scroll Lock these days...
-function atenPortSelect(port) {
-  processKeystroke({
-    key: "ScrollLock",
-    code: "ScrollLock",
-  });
-  processKeystroke({
-    key: "ScrollLock",
-    code: "ScrollLock",
-  });
-  processKeystroke({
-    key: port,
-    code: "Digit" + port,
-  });
-  processKeystroke({
-    key: "Enter",
-    code: "Enter",
-  });
-}
-menuBar.addEventListener("aten-port-requested", (evt) => {
-  atenPortSelect(evt.detail.port);
-});
-
-menuBar.addEventListener("sview-port-requested", (evt) => {
-  kvmSviewSelectPort(evt.detail.port);
+menuBar.addEventListener("kvm-command-request", (evt) => {
+  kvmUnitCommand(evt.detail);
 });
 
 setKeystrokeHistoryStatus(settings.isKeystrokeHistoryEnabled());
