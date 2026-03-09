@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS external_kvm_commands(
 
 -- for compatibility (or convenience), pre-populate the tables.
 INSERT OR IGNORE INTO external_kvm(id, codename, label, ports, portscript)
-VALUES (NULL, 'linksys_sview', 'SVIEW', 0, '/usr/lib/tinypilot/scripts/sview-control');
+VALUES (NULL, 'linksys_sview', 'SVIEW', 0, '/usr/lib/tinypilot/scripts/sview-port');
 
 -- notice we supplied a command script
 INSERT OR IGNORE INTO external_kvm(id, codename, label, ports, commandscript)
