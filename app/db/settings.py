@@ -115,7 +115,7 @@ class Settings:
             raise
 
         cursor = self._db_connection.execute(
-            'UPDATE external_kvm SET portscript=? WHERE id=?', [defined['intid'], scriptpath]
+            'UPDATE external_kvm SET portscript=? WHERE id=?', [scriptpath, defined['intid']]
         )
 
     def set_kvm_commandscript(self, kvmname, scriptpath):
@@ -125,7 +125,7 @@ class Settings:
             raise
 
         cursor = self._db_connection.execute(
-            'UPDATE external_kvm SET commandscript=? WHERE id=?', [defined['intid'], scriptpath]
+            'UPDATE external_kvm SET commandscript=? WHERE id=?', [scriptpath, defined['intid']]
         )
 
     def delete_kvm(self, kvmname):

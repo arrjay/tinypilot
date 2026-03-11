@@ -904,7 +904,7 @@ def invoke_kvm_script():
         return json_response.error(e), 400
 
     try:
-        cmd_list = ['/usr/bin/sudo', ops['script']]
+        cmd_list = [ops['script']]
         if ops['args']:
             for arg in ops['args']:
                 cmd_list.append(arg)
