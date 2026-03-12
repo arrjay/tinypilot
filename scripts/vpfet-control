@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+case "${1}" in
+  reset)
+      # off
+      ir-ctl -S nec:0x8012
+      sleep 0.2
+      # on
+      ir-ctl -S nec:0x801e
+      exit 0
+  ;;
+  portselect) shift  ;;
+  *)          exit 1 ;;
+esac
+
+case "${1}" in
+  1) ir-ctl -S nec:0x8004 ;;
+  2) ir-ctl -S nec:0x8006 ;;
+  3) ir-ctl -S nec:0x800a ;;
+  4) ir-ctl -S nec:0x801f ;;
+  *) exit 1 ;;
+esac
+
