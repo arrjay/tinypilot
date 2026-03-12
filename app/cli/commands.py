@@ -99,7 +99,7 @@ def set_kvm_gpio_script(_args):
     """Configures an External KVM Port Script for Tinypilot"""
     try:
         if len(_args) < 3:
-            script = ''
+            script = None
         else:
             script = _args[2]
         db.settings.Settings().set_kvm_portscript(_args[1], script)
@@ -111,7 +111,7 @@ def set_external_kvm_script(_args):
     """Configures a KVM External Command Script for Tinypilot"""
     try:
         if len(_args) < 3:
-            script = ''
+            script = None
         else:
             script = _args[2]
         db.settings.Settings().set_kvm_commandscript(_args[1], script)
