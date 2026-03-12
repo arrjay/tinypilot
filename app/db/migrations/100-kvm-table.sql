@@ -19,8 +19,8 @@ CREATE TABLE IF NOT EXISTS external_kvm(
 CREATE TABLE IF NOT EXISTS external_kvm_commands(
     id INTEGER PRIMARY KEY,
     kvm_id INTEGER,
-    action TEXT NOT NULL UNIQUE,
-    label TEXT NOT NULL UNIQUE
+    action TEXT NOT NULL,
+    label TEXT NOT NULL
 );
 
 -- for compatibility (or convenience), pre-populate the tables.

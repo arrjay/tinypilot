@@ -334,12 +334,14 @@
             <li class="item subgroup" role="presentation">
               <a role="menuitem">{{config.KVM_CONFIGURATION[entity].label}} Unit Config</a>
               <ul class="items" role="group">
-                {% for verb in config.KVM_CONFIGURATION[entity].verbs %}
+                {% for entry in config.KVM_CONFIGURATION[entity].verbs %}
+                {% for verb, label in entry.items() %}
                 <li class="item" role="presentation">
                   <a role="menuitem" kvmtype="{{entity}}" action="{{verb}}" class="kvm-command"
-                    >[{{config.KVM_CONFIGURATION[entity].label}}] {{config.KVM_CONFIGURATION[entity].verbs[verb]}}</a
+                    >[{{config.KVM_CONFIGURATION[entity].label}}] {{label}}</a
                   >
                 </li>
+                {% endfor %}
                 {% endfor %}
               </ul>
             </li>

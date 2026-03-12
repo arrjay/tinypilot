@@ -893,3 +893,4 @@ def invoke_kvm_script():
         raise network.NetworkError(str(e.output).strip()) from e
     except Error as e:
         raise network.NetworkError(e)
+    return json_response.success()
