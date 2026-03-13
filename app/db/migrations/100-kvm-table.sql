@@ -44,4 +44,4 @@ VALUES (NULL, 'vpfet-ir', 'IR KVM', 0, '/usr/lib/tinypilot/scripts/vpfet-control
 
 INSERT OR IGNORE INTO external_kvm_commands(id, kvm_id, action, label)
 VALUES
-  (NULL, (SELECT id FROM external_kvm WHERE codename = 'vpfet-ir'), 'reset', 'Reset KVM'),
+  (NULL, (SELECT id FROM external_kvm WHERE codename = 'vpfet-ir'), 'reset', 'Reset KVM');
