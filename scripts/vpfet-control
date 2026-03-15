@@ -3,10 +3,10 @@
 case "${1}" in
   reset)
       # off
-      ir-ctl -S nec:0x8012
+      ir-ctl -S nec:0x801e
       sleep 0.2
       # on
-      ir-ctl -S nec:0x801e
+      ir-ctl -S nec:0x8012
       exit 0
   ;;
   portselect) shift  ;;
